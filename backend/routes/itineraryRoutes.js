@@ -1,0 +1,217 @@
+import express from "express";
+import { ItenaryModel } from "../db.js";
+import { userMiddleware } from "../middleware/authMiddleware.js";
+
+const router = express.Router();
+
+router.post('/create', userMiddleware, async (req, res) => {
+  const { destination, startdate, enddate } = req.body;
+
+  if (!destination || !startdate || !enddate) {
+    return res.status(400).json({ message: "Missing required itinerary fields" });
+  }
+  try {
+    const newItenary = await ItenaryModel.create({
+      userId: req.userId,      // 👈 from JWT middleware
+      destination,
+      startdate,
+      enddate,
+      events: [],
+      flightdetails: null,
+      hoteldetails: null
+    });
+
+    res.status(200).json({
+      message: "Itinerary created",
+      itineraryId: newItenary._id
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to create itinerary"
+    });
+  }
+});
+
+router.post("/event", userMiddleware, async (req, res) => {
+  const { itineraryId, event } = req.body;
+
+  if (!itineraryId || !event) {
+    return res.status(400).json({
+      message: "itineraryId and event are required"
+    });
+  }
+
+  try {
+    const itinerary = await ItenaryModel.findOneAndUpdate(
+      {
+        _id: itineraryId,
+        userId: req.userId // 🔒 ensure owner
+      },
+      {
+        $push: { events: event }
+      },
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({
+        message: "Itinerary not found or unauthorized"
+      });
+    }
+
+    res.json({ message: "Event added" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to add event"
+    });
+  }
+});
+
+router.post("/flight", userMiddleware, async (req, res) => {
+  const { itineraryId, flightdetails } = req.body;
+
+  if (!itineraryId || !flightdetails) {
+    return res.status(400).json({
+      message: "itineraryId and flightdetails are required"
+    });
+  }
+
+  try {
+    const itinerary = await ItenaryModel.findOneAndUpdate(
+      {
+        _id: itineraryId,
+        userId: req.userId
+      },
+      {
+        $set: { flightdetails }
+      },
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({
+        message: "Itinerary not found or unauthorized"
+      });
+    }
+
+    res.json(itinerary);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to add flight"
+    });
+  }
+});
+
+//----------return flighst add-----------
+router.post("/returnflight", userMiddleware, async (req, res) => {
+  const { itineraryId, returnflight } = req.body;
+
+  if (!itineraryId || !returnflight) {
+    return res.status(400).json({
+      message: "itineraryId and returnflight are required"
+    });
+  }
+
+  try {
+    const itinerary = await ItenaryModel.findOneAndUpdate(
+      {
+        _id: itineraryId,
+        userId: req.userId
+      },
+      {
+        $set: { returnflight }
+      },
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({
+        message: "Itinerary not found or unauthorized"
+      });
+    }
+
+    res.json(itinerary);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to add flight"
+    });
+  }
+});
+
+router.post("/hotel", userMiddleware, async (req, res) => {
+  const { itineraryId, hoteldetails } = req.body;
+
+  if (!itineraryId || !hoteldetails) {
+    return res.status(400).json({
+      message: "itineraryId and hoteldetails are required"
+    });
+  }
+
+  try {
+    const itinerary = await ItenaryModel.findOneAndUpdate(
+      {
+        _id: itineraryId,
+        userId: req.userId
+      },
+      {
+        $set: { hoteldetails }
+      },
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({
+        message: "Itinerary not found or unauthorized"
+      });
+    }
+
+    res.json(itinerary);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      message: "Failed to add hotel"
+    });
+  }
+});
+
+router.get("/:id", userMiddleware, async (req, res) => {
+  try {
+    const itinerary = await ItenaryModel.findOne({
+      _id: req.params.id,
+      userId: req.userId
+    });
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found" });
+    }
+
+    res.json(itinerary);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch itinerary" });
+  }
+});
+
+// Since the server.js binds to /api/itineraries, we will bind this route directly in server.js or change it to /api/itinerary/all
+// I'll leave it as is but export a separate router, or just put it in itineraryRoutes for /all, wait, the original was app.get("/api/itineraries").
+// I'll make it router.get("/", ...) and bind it to /api/itineraries in server.js
+router.get("/", userMiddleware, async (req, res) => {
+  try {
+    const itineraries = await ItenaryModel.find({
+      userId: req.userId
+    }).sort({ _id: -1 }); // latest first (optional)
+
+    res.json({
+      itineraries
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to fetch itineraries" });
+  }
+});
+
+export default router;

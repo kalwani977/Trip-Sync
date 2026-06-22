@@ -1,9 +1,10 @@
 import mongoose from "mongoose";
 import { model, Schema } from "mongoose";
+import dotenv from "dotenv";
 
-await mongoose.connect(
-  "mongodb+srv://akakhushi123_db_user:5ErEWSFE3I9OUdiX@cluster0.okd7yim.mongodb.net/"
-);
+dotenv.config();
+
+await mongoose.connect(process.env.MONGO_URI);
 
 // ---------------- USER ----------------
 const UserSchema = new Schema({
@@ -17,7 +18,15 @@ const UserSchema = new Schema({
   city: String,
   state: String,
   email: { type: String, unique: true },
-  phone_number: String
+  phone_number: String,
+  googleTokens: { type: Object }
+});
+
+// ---------------- OTP ----------------
+const OtpSchema = new Schema({
+  email: { type: String, required: true },
+  otp: { type: String, required: true },
+  createdAt: { type: Date, default: Date.now, expires: 600 } // Auto-delete after 10 minutes (600 seconds)
 });
 
 // ---------------- EVENT ----------------
@@ -92,3 +101,4 @@ const ItenarySchema = new Schema({
 // ---------------- MODELS ----------------
 export const UserModel = model("User", UserSchema);
 export const ItenaryModel = model("Itenary", ItenarySchema);
+export const OtpModel = model("Otp", OtpSchema);

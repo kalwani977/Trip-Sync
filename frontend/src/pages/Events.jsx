@@ -118,7 +118,7 @@ const handleAddToItinerary = async (event) => {
 /* ---------------- ADD TO CALENDAR ---------------- */
 const handleAddToCalendar = async (event) => {
   if (!googleConnected) {
-    window.location.href = "http://localhost:3000/api/google/auth";
+    window.location.href = `http://localhost:3000/api/google/auth?token=${localStorage.getItem('token')}`;
     return;
   }
 
@@ -153,7 +153,7 @@ const handleAddToCalendar = async (event) => {
             <p>Google Calendar not connected</p>
             <button 
               className="gcal-connect-btn"
-              onClick={() => window.location.href = "http://localhost:3000/api/google/auth"}
+              onClick={() => window.location.href = `http://localhost:3000/api/google/auth?token=${localStorage.getItem('token')}`}
             >
               Connect
             </button>
