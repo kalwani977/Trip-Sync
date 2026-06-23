@@ -25,7 +25,7 @@ export default function RouteFinder() {
     try {
       setLoading(true);
       setError("");
-      const res = await axios.post("http://localhost:3000/api/map", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/map`, {
         startCity: start,
         endCity: end,
         mode,

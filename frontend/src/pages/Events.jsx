@@ -3,19 +3,50 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Nav from "../components/Nav";
 import "../styles/Events.css";
+import toast from "react-hot-toast";
 
 export default function Events() {
   const location = useLocation();
-  const trip = location.state?.trip;
+  const searchParams = new URLSearchParams(location.search);
+  const tripId = searchParams.get("tripId");
 
-  const city = trip?.destination;
-  const startDate = trip?.start;
-  const endDate = trip?.end;
-
-  const [events, setEvents] = useState([]);
+  const [trip, setTrip] = useState(location.state?.trip || null);
+  const initialData = location.state?.initialData;
+  const [events, setEvents] = useState(initialData?.events || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [googleConnected, setGoogleConnected] = useState(false);
+
+  const city = trip?.destination;
+  const startDate = trip?.start || trip?.startdate;
+  const endDate = trip?.end || trip?.enddate;
+
+  useEffect(() => {
+    if (!trip && tripId) {
+      const fetchTrip = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/itinerary/${tripId}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.data && res.data.itinerary) {
+            const itn = res.data.itinerary;
+            setTrip({
+              id: itn._id,
+              destination: itn.destination,
+              startDestination: itn.startDestination,
+              start: itn.startdate,
+              end: itn.enddate
+            });
+          }
+        } catch (err) {
+          console.error("Failed to fetch trip details", err);
+          setError("Failed to load trip details. Please go back.");
+        }
+      };
+      fetchTrip();
+    }
+  }, [trip, tripId]);
 
   /* ---------------- CHECK GOOGLE STATUS ---------------- */
   useEffect(() => {
@@ -23,21 +54,23 @@ export default function Events() {
     if (!token) return;
 
     axios
-      .get("http://localhost:3000/api/google/status")
+      .get(`${import.meta.env.VITE_API_URL}/api/google/status`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
       .then(res => setGoogleConnected(res.data.connected))
       .catch(() => setGoogleConnected(false));
   }, []);
 
   /* ---------------- FETCH EVENTS ---------------- */
   useEffect(() => {
-    if (city && startDate && endDate) fetchEvents();
-  }, [city, startDate, endDate]);
+    if (city && startDate && endDate && (!initialData || !initialData.events)) fetchEvents();
+  }, [city, startDate, endDate, initialData]);
 
   const fetchEvents = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get("http://localhost:3000/api/events", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/events`, {
         params: {
           city,
           start_date: startDate,
@@ -53,72 +86,32 @@ export default function Events() {
     }
   };
 
-  /* ---------------- ADD EVENT ---------------- */
-  const handleAddEvent = async (event) => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    alert("Please login first");
-    return;
-  }
 
-  // 1. Format the date correctly (Google expects YYYY-MM-DD)
-  // If your 'trip' object has the year, use that. 
-  // SerpApi's event.date is often just "Month Day". 
-  // Here we ensure we have a fallback or valid ISO string.
-  const eventDate = event.date || trip.start; 
-
-  const safeEvent = {
-    ...event,
-    date: eventDate, 
-    time: event.time || "10:00" // Required for Google Calendar start time
-  };
-
-  try {
-    // 1️⃣ Add to Itinerary (Internal DB)
-    await axios.post(
-      "http://localhost:3000/api/itinerary/event",
-      { itineraryId: trip.id, event: safeEvent },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-
-    // 2️⃣ Add to Google Calendar
-    // Note: We don't need the Auth header here because you're using global.googleTokens 
-    // on the backend, but in a production app, you'd associate tokens with a User ID.
-    await axios.post(
-      "http://localhost:3000/api/google/add-event",
-      { event: safeEvent }
-    );
-
-    alert("✅ Event added to Itinerary & Google Calendar!");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to add event. Make sure Google is connected.");
-  }
-};
 const handleAddToItinerary = async (event) => {
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("Please login first");
+    toast.error("Please login first");
     return;
   }
 
   try {
     await axios.post(
-      "http://localhost:3000/api/itinerary/event",
+      `${import.meta.env.VITE_API_URL}/api/itinerary/event`,
       { itineraryId: trip.id, event },
       { headers: { Authorization: `Bearer ${token}` } }
     );
-    alert("✅ Event added to your Itinerary!");
+    toast.success("Event added to your Itinerary!");
   } catch (err) {
     console.error(err);
-    alert("Failed to add to itinerary.");
+    toast.error("Failed to add to itinerary.");
   }
 };
 
 /* ---------------- ADD TO CALENDAR ---------------- */
 const handleAddToCalendar = async (event) => {
+  const token = localStorage.getItem("token");
   if (!googleConnected) {
-    window.location.href = `http://localhost:3000/api/google/auth?token=${localStorage.getItem('token')}`;
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/google/auth?token=${token}`;
     return;
   }
 
@@ -132,13 +125,14 @@ const handleAddToCalendar = async (event) => {
 
   try {
     await axios.post(
-      "http://localhost:3000/api/google/add-event",
-      { event: safeEvent }
+      `${import.meta.env.VITE_API_URL}/api/google/add-event`,
+      { event: safeEvent },
+      { headers: { Authorization: `Bearer ${token}` } }
     );
-    alert("Event synced to Google Calendar!");
+    toast.success("Event synced to Google Calendar!");
   } catch (err) {
     console.error(err);
-    alert("Failed to add to Google Calendar.");
+    toast.error("Failed to add to Google Calendar.");
   }
 };
   /* ---------------- UI ---------------- */
@@ -153,7 +147,7 @@ const handleAddToCalendar = async (event) => {
             <p>Google Calendar not connected</p>
             <button 
               className="gcal-connect-btn"
-              onClick={() => window.location.href = `http://localhost:3000/api/google/auth?token=${localStorage.getItem('token')}`}
+              onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/api/google/auth?token=${localStorage.getItem('token')}`}
             >
               Connect
             </button>

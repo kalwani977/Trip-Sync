@@ -14,11 +14,11 @@ export default function Compare() {
 
   const fetchCityData = async (city) => {
     const [weatherRes, hotelsRes, eventsRes] = await Promise.allSettled([
-      axios.get(`http://localhost:3000/api/weather?city=${city}`),
-      axios.get("http://localhost:3000/api/hotels", {
+      axios.get(`${import.meta.env.VITE_API_URL}/api/weather?city=${city}`),
+      axios.get(`${import.meta.env.VITE_API_URL}/api/hotels`, {
         params: { city, check_in: startDate, check_out: endDate }
       }),
-      axios.get("http://localhost:3000/api/events", {
+      axios.get(`${import.meta.env.VITE_API_URL}/api/events`, {
         params: { city, start_date: startDate, end_date: endDate }
       })
     ]);

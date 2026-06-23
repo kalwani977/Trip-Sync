@@ -1,12 +1,13 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Nav from "../components/Nav";
-import "../styles/Itenary.css";
+import "../styles/Itinerary.css";
 
-export default function Itenary() {
+export default function Itinerary() {
   const location = useLocation();
   const navigate = useNavigate();
   const trip = location.state?.trip;
+  const orchestratorResults = location.state?.orchestratorResults || {};
 
   const agents = [
     { id: 1, label: "Events", desc: "Discover local events & festivals", icon: "E" },
@@ -20,19 +21,19 @@ export default function Itenary() {
     if (!trip) return;
     switch (card.label) {
       case "Route":
-        navigate("/route", { state: { start: trip.startDestination, end: trip.destination } });
+        navigate("/route", { state: { start: trip.startDestination, end: trip.destination, initialData: orchestratorResults.route } });
         break;
       case "Flights":
-        navigate("/flights", { state: { trip } });
+        navigate("/flights", { state: { trip, initialData: orchestratorResults.flights } });
         break;
       case "Weather":
-        navigate("/weather", { state: { trip } });
+        navigate("/weather", { state: { trip, initialData: orchestratorResults.weather } });
         break;
       case "Events":
-        navigate("/events", { state: { trip } });
+        navigate(`/events?tripId=${trip.id}`, { state: { trip, initialData: orchestratorResults.events } });
         break;
       case "Hotels":
-        navigate("/hotels", { state: { trip } });
+        navigate("/hotels", { state: { trip, initialData: orchestratorResults.hotels } });
         break;
       default:
         break;

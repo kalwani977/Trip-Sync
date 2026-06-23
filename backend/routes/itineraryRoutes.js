@@ -1,5 +1,5 @@
 import express from "express";
-import { ItenaryModel } from "../db.js";
+import { ItineraryModel } from "../db.js";
 import { userMiddleware } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -11,7 +11,7 @@ router.post('/create', userMiddleware, async (req, res) => {
     return res.status(400).json({ message: "Missing required itinerary fields" });
   }
   try {
-    const newItenary = await ItenaryModel.create({
+    const newItinerary = await ItineraryModel.create({
       userId: req.userId,      // 👈 from JWT middleware
       destination,
       startdate,
@@ -23,7 +23,7 @@ router.post('/create', userMiddleware, async (req, res) => {
 
     res.status(200).json({
       message: "Itinerary created",
-      itineraryId: newItenary._id
+      itineraryId: newItinerary._id
     });
   } catch (err) {
     console.error(err);
@@ -43,7 +43,7 @@ router.post("/event", userMiddleware, async (req, res) => {
   }
 
   try {
-    const itinerary = await ItenaryModel.findOneAndUpdate(
+    const itinerary = await ItineraryModel.findOneAndUpdate(
       {
         _id: itineraryId,
         userId: req.userId // 🔒 ensure owner
@@ -79,7 +79,7 @@ router.post("/flight", userMiddleware, async (req, res) => {
   }
 
   try {
-    const itinerary = await ItenaryModel.findOneAndUpdate(
+    const itinerary = await ItineraryModel.findOneAndUpdate(
       {
         _id: itineraryId,
         userId: req.userId
@@ -116,7 +116,7 @@ router.post("/returnflight", userMiddleware, async (req, res) => {
   }
 
   try {
-    const itinerary = await ItenaryModel.findOneAndUpdate(
+    const itinerary = await ItineraryModel.findOneAndUpdate(
       {
         _id: itineraryId,
         userId: req.userId
@@ -152,7 +152,7 @@ router.post("/hotel", userMiddleware, async (req, res) => {
   }
 
   try {
-    const itinerary = await ItenaryModel.findOneAndUpdate(
+    const itinerary = await ItineraryModel.findOneAndUpdate(
       {
         _id: itineraryId,
         userId: req.userId
@@ -180,7 +180,7 @@ router.post("/hotel", userMiddleware, async (req, res) => {
 
 router.get("/:id", userMiddleware, async (req, res) => {
   try {
-    const itinerary = await ItenaryModel.findOne({
+    const itinerary = await ItineraryModel.findOne({
       _id: req.params.id,
       userId: req.userId
     });
@@ -201,7 +201,7 @@ router.get("/:id", userMiddleware, async (req, res) => {
 // I'll make it router.get("/", ...) and bind it to /api/itineraries in server.js
 router.get("/", userMiddleware, async (req, res) => {
   try {
-    const itineraries = await ItenaryModel.find({
+    const itineraries = await ItineraryModel.find({
       userId: req.userId
     }).sort({ _id: -1 }); // latest first (optional)
 

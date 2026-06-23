@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-import { ItenaryModel, UserModel } from "./db.js";
+import { ItineraryModel, UserModel } from "./db.js";
 import { userMiddleware } from "./middleware/authMiddleware.js";
 
 import chatbotRoutes from "./routes/chatbot.js";
@@ -26,14 +26,15 @@ app.use("/api/itinerary", itineraryRoutes);
 app.use("/api", travelRoutes);
 app.use("/api/google", googleRoutes);
 
-// Special route for /api/itineraries
-app.get("/api/itineraries", userMiddleware, async (req, res) => {
-  try {
-    const itineraries = await ItenaryModel.find({ userId: req.userId }).sort({ _id: -1 });
-    res.json({ itineraries });
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch itineraries" });
-  }
+
+
+// GLOBAL ERROR HANDLER
+app.use((err, req, res, next) => {
+  console.error("Global Error:", err);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || "Internal Server Error",
+  });
 });
 
 const PORT = process.env.PORT || 3000;

@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Nav from "../components/Nav";
@@ -12,13 +13,13 @@ export default function MyItineraries() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login first");
+      toast.error("Please login first");
       navigate("/login");
       return;
     }
 
     axios
-      .get("http://localhost:3000/api/itineraries", {
+      .get(`${import.meta.env.VITE_API_URL}/api/itinerary`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((res) => {
@@ -26,7 +27,7 @@ export default function MyItineraries() {
         setLoading(false);
       })
       .catch(() => {
-        alert("Failed to load itineraries");
+        toast.error("Failed to load itineraries");
         setLoading(false);
       });
   }, []);

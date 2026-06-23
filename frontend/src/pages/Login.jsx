@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Nav from "../components/Nav"; 
 import "../styles/Login.css";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,35 +34,35 @@ export default function Login() {
     e.preventDefault();
     try {
       if (isLogin) {
-        const res = await axios.post("http://localhost:3000/login", { email, password });
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, { email, password });
         if (res.data.status === "Success") {
           localStorage.setItem("token", res.data.token);
           localStorage.setItem("userId", res.data.userId);
           navigate("/");
-        } else { alert(res.data.status); }
+        } else { toast.error(res.data.status); }
       } else {
-        const res = await axios.post("http://localhost:3000/register", { 
+        const res = await axios.post(`${import.meta.env.VITE_API_URL}/register`, { 
           username, email, password, firstname, lastname, 
           gender, dob, city, state, nationality, phone_number: phoneNumber 
         });
-        alert(res.data.status);
+        toast.success(res.data.status);
         setIsLogin(true);
       }
     } catch (err) {
-      alert(err.response?.data?.status || "Error! Please try again.");
+      toast.error(err.response?.data?.status || "Error! Please try again.");
     }
   };
 
   // --- FORGOT PASSWORD: Send OTP ---
   const handleSendOtp = async () => {
-    if (!forgotEmail) return alert("Enter your email");
+    if (!forgotEmail) return toast.error("Enter your email");
     setForgotLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/forgot-password", { email: forgotEmail });
-      alert(res.data.status);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/forgot-password`, { email: forgotEmail });
+      toast.success(res.data.status);
       setOtpSent(true);
     } catch (err) {
-      alert(err.response?.data?.status || "Failed to send OTP");
+      toast.error(err.response?.data?.status || "Failed to send OTP");
     } finally {
       setForgotLoading(false);
     }
@@ -69,20 +70,20 @@ export default function Login() {
 
   // --- FORGOT PASSWORD: Reset ---
   const handleResetPassword = async () => {
-    if (!otp || !newPassword) return alert("Enter OTP and new password");
+    if (!otp || !newPassword) return toast.error("Enter OTP and new password");
     setForgotLoading(true);
     try {
-      const res = await axios.post("http://localhost:3000/reset-password", {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/reset-password`, {
         email: forgotEmail, otp, newPassword
       });
-      alert(res.data.status);
+      toast.success(res.data.status);
       setShowForgot(false);
       setOtpSent(false);
       setOtp("");
       setNewPassword("");
       setForgotEmail("");
     } catch (err) {
-      alert(err.response?.data?.status || "Failed to reset password");
+      toast.error(err.response?.data?.status || "Failed to reset password");
     } finally {
       setForgotLoading(false);
     }

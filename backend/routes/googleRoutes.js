@@ -1,16 +1,18 @@
 import express from "express";
 import { google } from "googleapis";
 import { UserModel } from "../db.js";
+import { encryptToken, decryptToken } from "../utils/cryptoUtils.js";
 import { userMiddleware } from "../middleware/authMiddleware.js";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
 
-const oauth2Client = new google.auth.OAuth2(
+const createOAuth2Client = () => new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
   process.env.GOOGLE_REDIRECT_URI
 );
+
 
 router.get("/status", userMiddleware, async (req, res) => {
   try {
@@ -34,7 +36,7 @@ router.get("/auth", (req, res) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_PASSWORD);
     
-    const url = oauth2Client.generateAuthUrl({
+    const url = createOAuth2Client().generateAuthUrl({
       access_type: "offline",
       prompt: "consent",
       scope: ["https://www.googleapis.com/auth/calendar.events"],
@@ -54,11 +56,11 @@ router.get("/callback", async (req, res) => {
       return res.status(400).send("State (userId) missing from callback");
     }
 
-    const { tokens } = await oauth2Client.getToken(code);
+    const { tokens } = await createOAuth2Client().getToken(code);
     
     // Save tokens to DB
     await UserModel.findByIdAndUpdate(state, {
-      googleTokens: tokens
+      googleTokens: encryptToken(tokens)
     });
 
     res.send("Google connected! You can close this tab.");
@@ -77,7 +79,13 @@ router.post("/add-event", userMiddleware, async (req, res) => {
       return res.status(401).json({ message: "Google not connected" });
     }
 
-    oauth2Client.setCredentials(user.googleTokens);
+    const oauth2Client = createOAuth2Client();
+    const decryptedTokens = decryptToken(user.googleTokens);
+    if (!decryptedTokens) {
+      return res.status(401).json({ message: "Invalid or corrupted Google tokens" });
+    }
+    
+    oauth2Client.setCredentials(decryptedTokens);
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
 
     // Parse date - handle various formats
@@ -111,12 +119,10 @@ router.post("/add-event", userMiddleware, async (req, res) => {
         location: event.venue || event.address || "",
         description: `Booked via TripSync. Ticket Link: ${event.ticket_link || 'N/A'}`,
         start: { 
-            dateTime: `${startDateTime}+05:30`,
-            timeZone: "Asia/Kolkata" 
+            dateTime: `${startDateTime}:00Z`
         },
         end: { 
-            dateTime: `${endDateTime}+05:30`,
-            timeZone: "Asia/Kolkata" 
+            dateTime: `${endDateTime}:00Z`
         },
         reminders: {
           useDefault: false,

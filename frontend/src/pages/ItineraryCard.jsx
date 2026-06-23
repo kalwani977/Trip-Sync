@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import Nav from "../components/Nav";
-import "../styles/ItenaryCard.css";
+import "../styles/ItineraryCard.css";
 
-export default function ItenaryDetails() {
+export default function ItineraryDetails() {
   const { id } = useParams();
   const [data, setData] = useState(null);
   const [weather, setWeather] = useState([]);
@@ -18,7 +18,7 @@ export default function ItenaryDetails() {
   const fetchItinerary = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3000/api/itinerary/${id}`, {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/itinerary/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setData(res.data);
@@ -34,7 +34,7 @@ export default function ItenaryDetails() {
 
   const fetchWeather = async (city) => {
     try {
-      const res = await axios.get(`http://localhost:3000/api/weather?city=${city}`);
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/weather?city=${city}`);
       setWeather(res.data.list || []);
     } catch (err) {
       console.error("Weather fetch failed");

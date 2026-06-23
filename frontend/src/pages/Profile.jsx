@@ -1,3 +1,4 @@
+import toast from 'react-hot-toast';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Nav from "../components/Nav";
@@ -23,13 +24,13 @@ export default function Profile() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login first");
+      toast.error("Please login first");
       navigate("/login");
       return;
     }
 
     axios
-      .get("http://localhost:3000/api/profile", {
+      .get(`${import.meta.env.VITE_API_URL}/api/profile`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((res) => {
@@ -37,7 +38,7 @@ export default function Profile() {
         setLoading(false);
       })
       .catch(() => {
-        alert("Session expired. Please login again.");
+        toast.error("Session expired. Please login again.");
         localStorage.clear();
         navigate("/login");
       });
@@ -51,13 +52,13 @@ export default function Profile() {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     try {
-      await axios.put("http://localhost:3000/api/profile", profile, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/api/profile`, profile, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      alert("Profile updated successfully");
+      toast.success("Profile updated successfully");
       setIsEditing(false);
     } catch (err) {
-      alert("Failed to update profile");
+      toast.error("Failed to update profile");
     }
   };
 

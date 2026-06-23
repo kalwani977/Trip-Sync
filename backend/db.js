@@ -79,11 +79,12 @@ const HotelSchema = new Schema(
 );
 
 // ---------------- ITINERARY ----------------
-const ItenarySchema = new Schema({
+const ItinerarySchema = new Schema({
   userId: {
     type: mongoose.Types.ObjectId,
     ref: "User",
-    required: true
+    required: true,
+    index: true
   },
   startDestination: String,
   destination: String,
@@ -100,5 +101,5 @@ const ItenarySchema = new Schema({
 
 // ---------------- MODELS ----------------
 export const UserModel = model("User", UserSchema);
-export const ItenaryModel = model("Itenary", ItenarySchema);
+export const ItineraryModel = model("Itinerary", ItinerarySchema);
 export const OtpModel = model("Otp", OtpSchema);

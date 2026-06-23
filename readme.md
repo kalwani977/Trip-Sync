@@ -173,7 +173,7 @@ TripSync/
 │   ├── src/
 │   │   ├── pages/             # Dashboard, Planner, Flights, Hotels, Events,
 │   │   │                      # Weather, Route, Compare, Profile, Login,
-│   │   │                      # Itenary, ItenaryCard, MyItineraries
+│   │   │                      # Itinerary, ItineraryCard, MyItineraries
 │   │   ├── components/        # Nav, BannerCarousel, Chatbot/
 │   │   ├── styles/            # CSS for each page
 │   │   ├── App.jsx            # Route definitions
@@ -193,10 +193,6 @@ If you'd like to contribute to TripSync, we welcome your input:
 3. **Commit** your changes: `git commit -m "Add feature description"`
 4. **Push** to the branch: `git push origin feature-name`
 5. **Submit** a Pull Request with a detailed description
-
-## ~ Author
-
-**Khushi Verma** — [@akakhushiverma](https://github.com/akakhushiverma)
 
 ## ~ Languages
 

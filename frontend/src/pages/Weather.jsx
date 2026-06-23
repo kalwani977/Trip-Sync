@@ -11,7 +11,8 @@ export default function Weather() {
   const startDate = trip?.start;
   const endDate = trip?.end;
 
-  const [forecast, setForecast] = useState([]);
+  const initialData = location.state?.initialData;
+  const [forecast, setForecast] = useState(initialData?.list || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -31,15 +32,15 @@ export default function Weather() {
   const tripDates = generateDates(startDate, endDate);
 
   useEffect(() => {
-    if (city) fetchForecast();
-  }, [city]);
+    if (city && (!initialData || !initialData.list)) fetchForecast();
+  }, [city, initialData]);
 
   const fetchForecast = async () => {
     setLoading(true);
     setError("");
     try {
       const res = await fetch(
-        `http://localhost:3000/api/weather?city=${city}`
+        `${import.meta.env.VITE_API_URL}/api/weather?city=${city}`
       );
       if (!res.ok) throw new Error("Weather data not found");
       const data = await res.json();

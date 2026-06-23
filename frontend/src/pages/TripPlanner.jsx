@@ -72,7 +72,7 @@ export default function TripPlanner() {
 
       // 1. Create itinerary in backend
       const res = await axios.post(
-        "http://localhost:3000/api/itinerary/create",
+        `${import.meta.env.VITE_API_URL}/api/itinerary/create`,
         { destination, startdate: start, enddate: end },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -82,43 +82,65 @@ export default function TripPlanner() {
       // 2. Run all agents in parallel
       const agentPromises = [
         // Weather Agent
-        axios.get(`http://localhost:3000/api/weather?city=${destination}`)
-          .then(() => updateAgent("weather", "done"))
+        axios.get(`${import.meta.env.VITE_API_URL}/api/weather?city=${destination}`)
+          .then(res => {
+            updateAgent("weather", "done");
+            return { type: 'weather', data: res.data };
+          })
           .catch(() => updateAgent("weather", "failed")),
 
         // Route Agent
-        axios.post("http://localhost:3000/api/map", {
+        axios.post(`${import.meta.env.VITE_API_URL}/api/map`, {
           startCity: startDestination,
           endCity: destination,
           mode: "driving-car"
         })
-          .then(() => updateAgent("route", "done"))
+          .then(res => {
+            updateAgent("route", "done");
+            return { type: 'route', data: res.data };
+          })
           .catch(() => updateAgent("route", "failed")),
 
         // Flights Agent
-        axios.get("http://localhost:3000/api/flights", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/flights`, {
           params: { from: startDestination, to: destination, out_date: start }
         })
-          .then(() => updateAgent("flights", "done"))
+          .then(res => {
+            updateAgent("flights", "done");
+            return { type: 'flights', data: res.data };
+          })
           .catch(() => updateAgent("flights", "failed")),
 
         // Hotels Agent
-        axios.get("http://localhost:3000/api/hotels", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/hotels`, {
           params: { city: destination, check_in: start, check_out: end }
         })
-          .then(() => updateAgent("hotels", "done"))
+          .then(res => {
+            updateAgent("hotels", "done");
+            return { type: 'hotels', data: res.data };
+          })
           .catch(() => updateAgent("hotels", "failed")),
 
         // Events Agent
-        axios.get("http://localhost:3000/api/events", {
+        axios.get(`${import.meta.env.VITE_API_URL}/api/events`, {
           params: { city: destination, start_date: start, end_date: end }
         })
-          .then(() => updateAgent("events", "done"))
+          .then(res => {
+            updateAgent("events", "done");
+            return { type: 'events', data: res.data };
+          })
           .catch(() => updateAgent("events", "failed")),
       ];
 
       // Wait for all agents (don't fail if one fails)
-      await Promise.allSettled(agentPromises);
+      const settled = await Promise.allSettled(agentPromises);
+      
+      const orchestratorResults = {};
+      settled.forEach(result => {
+        if (result.status === "fulfilled" && result.value) {
+          orchestratorResults[result.value.type] = result.value.data;
+        }
+      });
 
       // Small delay for UX
       await new Promise(resolve => setTimeout(resolve, 800));
@@ -134,7 +156,7 @@ export default function TripPlanner() {
         createdAt: new Date().toISOString(),
       };
 
-      navigate("/Itenary", { state: { trip } });
+      navigate("/itinerary", { state: { trip, orchestratorResults } });
 
     } catch (err) {
       console.error(err);

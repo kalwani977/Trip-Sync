@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Nav from "../components/Nav";
 import "../styles/Flights.css";
+import toast from "react-hot-toast";
 
 export default function Flights() {
   const location = useLocation();
@@ -13,7 +14,8 @@ export default function Flights() {
   const startDate = trip?.start;
   const endDate = trip?.end;
 
-  const [goingFlights, setGoingFlights] = useState([]);
+  const initialData = location.state?.initialData;
+  const [goingFlights, setGoingFlights] = useState(initialData?.flights || []);
   const [returnFlights, setReturnFlights] = useState([]);
 
   const [selectedGoing, setSelectedGoing] = useState(null);
@@ -33,25 +35,21 @@ export default function Flights() {
     setError("");
 
     try {
-      const [goingRes, returnRes] = await Promise.all([
-        axios.get("http://localhost:3000/api/flights", {
-          params: {
-            from: source,
-            to: destination,
-            out_date: startDate,
-          },
-        }),
-        axios.get("http://localhost:3000/api/flights", {
-          params: {
-            from: destination,
-            to: source,
-            out_date: endDate,
-          },
-        }),
-      ]);
+      const returnPromise = axios.get(`${import.meta.env.VITE_API_URL}/api/flights`, {
+        params: { from: destination, to: source, out_date: endDate },
+      });
 
-      setGoingFlights(goingRes.data.flights || []);
-      setReturnFlights(returnRes.data.flights || []);
+      if (!initialData || !initialData.flights) {
+        const goingPromise = axios.get(`${import.meta.env.VITE_API_URL}/api/flights`, {
+          params: { from: source, to: destination, out_date: startDate },
+        });
+        const [goingRes, returnRes] = await Promise.all([goingPromise, returnPromise]);
+        setGoingFlights(goingRes.data.flights || []);
+        setReturnFlights(returnRes.data.flights || []);
+      } else {
+        const returnRes = await returnPromise;
+        setReturnFlights(returnRes.data.flights || []);
+      }
     } catch (err) {
       setError("Failed to fetch flights");
     } finally {
@@ -62,14 +60,14 @@ export default function Flights() {
   const handleAddFlight = async (flight, type) => {
   const token = localStorage.getItem("token");
   if (!token) {
-    alert("Please login first");
+    toast.error("Please login first");
     return;
   }
 
   try {
     if (type === "going") {
       await axios.post(
-        "http://localhost:3000/api/itinerary/flight",
+        `${import.meta.env.VITE_API_URL}/api/itinerary/flight`,
         {
           itineraryId: trip.id,
           flightdetails: flight,   // ✅ EXACT KEY BACKEND EXPECTS
@@ -84,7 +82,7 @@ export default function Flights() {
 
     if (type === "return") {
       await axios.post(
-        "http://localhost:3000/api/itinerary/returnflight",
+        `${import.meta.env.VITE_API_URL}/api/itinerary/returnflight`,
         {
           itineraryId: trip.id,
           returnflight: flight,   // ✅ EXACT KEY BACKEND EXPECTS
@@ -97,10 +95,10 @@ export default function Flights() {
       setSelectedReturn(flight);
     }
 
-    alert(`Flight added (${type}) ✅`);
+    toast.success(`Flight added (${type})`);
   } catch (err) {
     console.error(err.response?.data || err.message);
-    alert("Failed to add flight");
+    toast.error("Failed to add flight");
   }
 };
 

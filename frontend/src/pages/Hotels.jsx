@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import Nav from "../components/Nav";
 import "../styles/Hotels.css";
+import toast from "react-hot-toast";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1566073771259-6a8506099945";
 
@@ -14,22 +15,23 @@ export default function Hotels() {
   const checkIn = trip?.start;
   const checkOut = trip?.end;
 
-  const [hotels, setHotels] = useState([]);
+  const initialData = location.state?.initialData;
+  const [hotels, setHotels] = useState(initialData?.hotels || []);
   const [selectedHotel, setSelectedHotel] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (city && checkIn && checkOut) {
+    if (city && checkIn && checkOut && (!initialData || !initialData.hotels)) {
       fetchHotels();
     }
-  }, [city, checkIn, checkOut]);
+  }, [city, checkIn, checkOut, initialData]);
 
   const fetchHotels = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.get("http://localhost:3000/api/hotels", {
+      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/hotels`, {
         params: { city, check_in: checkIn, check_out: checkOut },
       });
       setHotels(res.data.hotels || []);
@@ -43,20 +45,20 @@ export default function Hotels() {
   const handleAddHotel = async (hotel) => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login first");
+      toast.error("Please login first");
       return;
     }
 
     try {
       await axios.post(
-        "http://localhost:3000/api/itinerary/hotel",
+        `${import.meta.env.VITE_API_URL}/api/itinerary/hotel`,
         { itineraryId: trip.id, hoteldetails: hotel },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setSelectedHotel(hotel);
-      alert("Hotel added to itinerary ✅");
+      toast.success("Hotel added to itinerary");
     } catch (err) {
-      alert("Failed to add hotel");
+      toast.error("Failed to add hotel");
     }
   };
 
