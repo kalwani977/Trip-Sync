@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import Nav from "../components/Nav";
 import "../styles/Weather.css";
 
 export default function Weather() {
@@ -70,8 +69,7 @@ export default function Weather() {
 
   return (
     <div className="background-containerr">
-      <Nav />
-      <div className="background-content">
+            <div className="background-content">
         <header className="events-header">
           <h2 className="section-title">Weather in {city}</h2>
           <p className="events-subtitle">{startDate} — {endDate}</p>
@@ -106,8 +104,8 @@ export default function Weather() {
                           {midday.weather[0].description}
                         </p>
                         <div className="weather-stats-grid">
-                          <div className="w-stat">💧 {midday.main.humidity}%</div>
-                          <div className="w-stat">💨 {midday.wind.speed}m/s</div>
+                          <div className="w-stat">Humidity: {midday.main.humidity}%</div>
+                          <div className="w-stat">Wind: {midday.wind.speed}m/s</div>
                         </div>
                       </div>
                     ) : (

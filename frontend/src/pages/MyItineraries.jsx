@@ -1,13 +1,13 @@
-import toast from 'react-hot-toast';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Nav from "../components/Nav";
 import "../styles/MyItineraries.css";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function MyItineraries() {
   const [itineraries, setItineraries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,6 +28,7 @@ export default function MyItineraries() {
       })
       .catch(() => {
         toast.error("Failed to load itineraries");
+        setError("Failed to load itineraries.");
         setLoading(false);
       });
   }, []);
@@ -35,22 +36,33 @@ export default function MyItineraries() {
   const getDayCount = (start, end) => {
     if (!start || !end) return "—";
     const diff = Math.ceil((new Date(end) - new Date(start)) / (1000 * 60 * 60 * 24)) + 1;
-    return `${diff} days`;
+    return `${diff} Day${diff !== 1 ? "s" : ""}`;
+  };
+
+  const capitalizeFirstLetter = (str) => {
+    if (!str) return "";
+    return str.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
   };
 
   if (loading) {
     return (
       <div className="itineraries-page">
-        <Nav />
-        <div className="itineraries-loading">Loading your trips...</div>
+                <div className="itineraries-loading">Loading your trips...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="itineraries-page">
+                <div className="itineraries-loading">{error}</div>
       </div>
     );
   }
 
   return (
     <div className="itineraries-page">
-      <Nav />
-
+      
       <div className="itineraries-content">
         <header className="itineraries-header">
           <h1>My Itineraries</h1>
@@ -73,7 +85,7 @@ export default function MyItineraries() {
                 <div className="card-index">#{index + 1}</div>
                 
                 <div className="itinerary-card-top">
-                  <span className="itinerary-destination">{it.destination}</span>
+                  <span className="itinerary-destination">{capitalizeFirstLetter(it.destination)}</span>
                   <span className="itinerary-days">{getDayCount(it.startdate, it.enddate)}</span>
                 </div>
 

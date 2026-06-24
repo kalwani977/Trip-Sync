@@ -3,7 +3,7 @@
 .itineraries-page {
   min-height: 100vh;
   background: #0a0a0f;
-  padding-top: 110px;
+  /* padding-top removed (handled by Layout) */
   padding-bottom: 60px;
   position: relative;
   overflow: hidden;
@@ -26,7 +26,7 @@
 
 .itineraries-loading {
   text-align: center;
-  color: #D4AF37;
+  color: #ccc;
   font-size: 1.1rem;
   margin-top: 200px;
 }
@@ -43,7 +43,7 @@
 /* --- Header --- */
 .itineraries-header {
   margin-bottom: 40px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid var(--border);
   padding-bottom: 20px;
 }
 
@@ -66,8 +66,8 @@
   text-align: center;
   padding: 80px 20px;
   background: rgba(255, 255, 255, 0.02);
-  border: 1px dashed rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -101,10 +101,10 @@
 
 .empty-btn {
   margin-top: 15px;
-  background: linear-gradient(135deg, #D4AF37, #b8941e);
+  background: rgba(255, 255, 255, 0.1);
   color: #0a0a0f;
   border: none;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   padding: 12px 28px;
   font-weight: 800;
   font-size: 0.85rem;
@@ -115,8 +115,8 @@
 }
 
 .empty-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 25px rgba(255, 255, 255, 0.4);
 }
 
 /* --- Grid --- */
@@ -129,11 +129,11 @@
 /* --- Card --- */
 .itinerary-card {
   position: relative;
-  background: linear-gradient(145deg, rgba(30, 20, 40, 0.85), rgba(20, 15, 30, 0.9));
+  background: rgba(15, 15, 20, 0.85);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(154, 93, 184, 0.15);
-  border-radius: 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   padding: 28px;
   transition: all 0.3s ease;
   display: flex;
@@ -142,11 +142,9 @@
 }
 
 .itinerary-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(154, 93, 184, 0.4);
-  box-shadow: 
-    0 15px 40px rgba(0, 0, 0, 0.5),
-    0 0 20px rgba(154, 93, 184, 0.1);
+  background: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
 }
 
 .card-index {
@@ -167,20 +165,22 @@
 
 .itinerary-destination {
   color: #fff;
+  font-family: 'Inter', sans-serif;
   font-size: 1.5rem;
-  font-weight: 800;
-  letter-spacing: -0.3px;
+  font-weight: 400;
+  letter-spacing: 0px;
 }
 
 .itinerary-days {
-  background: rgba(212, 175, 55, 0.12);
-  color: #D4AF37;
-  padding: 5px 14px;
-  border-radius: 6px;
+  background: var(--border);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
 }
 
 /* Card Dates */
@@ -200,48 +200,48 @@
 /* Card Meta Tags */
 .itinerary-card-meta {
   display: flex;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 5px;
 }
 
 .meta-tag {
-  background: rgba(154, 93, 184, 0.1);
-  border: 1px solid rgba(154, 93, 184, 0.25);
-  color: #c9a0dc;
-  padding: 5px 12px;
-  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #ccc;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 1px;
 }
 
 .meta-tag.incomplete {
-  border-color: rgba(255, 152, 0, 0.3);
-  color: #ff9800;
-  background: rgba(255, 152, 0, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #aaa;
+  background: var(--border);
 }
 
 /* Open Button */
 .open-btn {
   margin-top: auto;
   background: transparent;
-  color: #D4AF37;
-  border: 1px solid rgba(212, 175, 55, 0.3);
-  border-radius: 8px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
   padding: 11px 20px;
-  font-weight: 700;
-  font-size: 0.82rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
   cursor: pointer;
   transition: all 0.3s ease;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 .open-btn:hover {
-  background: rgba(212, 175, 55, 0.1);
-  border-color: rgba(212, 175, 55, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* --- Responsive --- */

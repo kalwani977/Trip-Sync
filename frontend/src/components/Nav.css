@@ -1,148 +1,90 @@
 .top-header {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   position: fixed;
-  top: 15px;
-  left: 3%;
-  right: 3%;
-  height: 70px;
-  padding: 0 35px;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  padding: 0 40px;
   z-index: 1000;
-
-  /* Glassmorphism - enhanced */
-  background: rgba(15, 10, 20, 0.6);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(154, 93, 184, 0.15);
-  border-radius: 50px;
-  box-shadow: 
-    0 10px 40px rgba(0, 0, 0, 0.5),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition: all 0.4s ease;
 }
 
-.top-header:hover {
-  border-color: rgba(154, 93, 184, 0.3);
-  box-shadow: 
-    0 15px 50px rgba(0, 0, 0, 0.6),
-    0 0 20px rgba(154, 93, 184, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+.top-header.scrolled {
+  background: rgba(10, 10, 15, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  height: 70px;
 }
 
-/* Brand / Logo */
-.brand {
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 800;
-  cursor: pointer;
+.nav-left-links {
   display: flex;
   align-items: center;
-  gap: 10px;
-  letter-spacing: 0.5px;
-  transition: transform 0.3s ease;
+  gap: 20px;
+  justify-self: start;
 }
 
-.brand:hover {
-  transform: scale(1.03);
-}
-
-.brand-icon {
-  color: #D4AF37;
-  font-size: 1.6rem;
-  filter: drop-shadow(0 0 6px rgba(212, 175, 55, 0.4));
-}
-
-/* Nav Menu */
-.nav-menu {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  position: relative;
-}
-
-/* Nav Items */
 .nav-item {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-size: 0.9rem;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 25px;
-  transition: all 0.3s ease;
-  letter-spacing: 0.3px;
+  font-weight: 500;
+  transition: color 0.3s ease;
 }
 
 .nav-item:hover {
   color: #fff;
-  background: rgba(154, 93, 184, 0.15);
 }
 
-.nav-item.active {
-  color: #fff;
-  background: rgba(154, 93, 184, 0.25);
-  box-shadow: 0 0 12px rgba(154, 93, 184, 0.2);
-}
-
-/* Sliding marker underline */
-.marker {
-  position: absolute;
-  bottom: -2px;
-  height: 3px;
-  background: linear-gradient(90deg, #D4AF37, #9a5db8);
-  border-radius: 10px;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
-}
-
-/* Login/Logout Button */
-.nav-item-login-btn {
-  background: linear-gradient(135deg, #9a5db8, #6a3d7d);
+.brand-center {
+  justify-self: center;
   color: white;
-  border: none;
-  border-radius: 25px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  padding: 10px 24px;
-  margin-left: 12px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -1px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(154, 93, 184, 0.3);
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
 }
 
-.nav-item-login-btn:hover {
-  background: linear-gradient(135deg, #b06fd4, #9a5db8);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(154, 93, 184, 0.5);
+.nav-right {
+  display: flex;
+  justify-self: end;
+  align-items: center;
 }
 
-/* Mobile responsive */
+.hamburger-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.hamburger-btn:hover {
+  transform: scale(1.1);
+}
+
 @media (max-width: 900px) {
-  .top-header {
-    left: 2%;
-    right: 2%;
-    height: 60px;
-    padding: 0 20px;
-  }
-  .brand { font-size: 1.2rem; }
-  .nav-item { font-size: 0.8rem; padding: 6px 12px; }
-  .nav-item-login-btn { padding: 8px 16px; font-size: 0.75rem; }
+  .top-header { padding: 0 20px; height: 70px; }
+  .top-header.scrolled { height: 60px; }
+  .nav-left-links { display: none; }
+  .top-header { grid-template-columns: 1fr auto; justify-content: space-between; display: flex; }
 }
 
 @media (max-width: 600px) {
   .top-header {
-    top: 10px;
-    left: 10px;
-    right: 10px;
-    height: 55px;
+    height: 65px;
     padding: 0 15px;
-    border-radius: 30px;
   }
-  .brand { font-size: 1rem; gap: 6px; }
-  .brand-icon { font-size: 1.2rem; }
-  .nav-item { font-size: 0.7rem; padding: 5px 8px; }
-  .nav-item-login-btn { padding: 6px 14px; font-size: 0.7rem; margin-left: 6px; }
-  .nav-menu { gap: 2px; }
+  .brand { font-size: 1.1rem; gap: 6px; }
+  .brand-icon { font-size: 1.3rem; }
+  .nav-menu { display: none; /* Hide nav links on very small screens, use sidebar instead */ }
 }

@@ -4,7 +4,7 @@ import { createChatBotMessage } from 'react-chatbot-kit';
 const config = {
   botName: "Trekky ",
   initialMessages: [
-    createChatBotMessage("Hi! I'm Trekky ✨ How can I help with your journey?")
+    createChatBotMessage("Hi! I'm Trekky  How can I help with your journey?")
   ],
   customStyles: {
     botMessageBox: { backgroundColor: '#4A304D' },
@@ -21,7 +21,7 @@ const config = {
         fontSize: "1.1rem",
         borderBottom: "1px solid rgba(212, 175, 55, 0.2)"
       }
-    }, ' 💫Trekky AI'),
+    }, ' Trekky AI'),
     
     botAvatar: () => React.createElement('div', {
       style: {
@@ -34,7 +34,7 @@ const config = {
         justifyContent: "center",
         fontSize: "18px"
       }
-    }, '✨')
+    }, '')
   },
 };
 

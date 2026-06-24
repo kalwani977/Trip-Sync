@@ -1,9 +1,9 @@
-/* ===== Profile Page — Warm Rose/Coral Theme ===== */
+/* ===== Profile Page ===== */
 
 .profile-page {
   min-height: 100vh;
-  background: #0a0a0f;
-  padding-top: 120px;
+  background: var(--bg-page);
+  /* padding-top removed (handled by Layout) */
   padding-bottom: 60px;
   position: relative;
   overflow: hidden;
@@ -16,16 +16,20 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #0a0a0f;
+  background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80');
+  background-size: cover;
+  background-position: center;
+  opacity: 0.06;
   z-index: 0;
   pointer-events: none;
 }
 
 .profile-loading {
   text-align: center;
-  color: #e8a87c;
-  font-size: 1.2rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
   margin-top: 200px;
+  letter-spacing: 1px;
 }
 
 .profile-center {
@@ -49,38 +53,37 @@
   gap: 10px;
   padding: 40px;
   width: 100%;
-  background: rgba(30, 20, 25, 0.75);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(232, 168, 124, 0.12);
-  border-radius: 22px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-avatar {
   width: 90px;
   height: 90px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #e8a87c, #d4745f);
+  border-radius: var(--radius-full);
+  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.2rem;
-  font-weight: 800;
+  font-weight: 700;
   color: #0a0a0f;
-  box-shadow: 0 6px 25px rgba(232, 168, 124, 0.35);
 }
 
 .profile-name {
   color: #fff;
   font-size: 1.8rem;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
   letter-spacing: -0.5px;
 }
 
 .profile-email {
-  color: #e8a87c;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   margin: 0;
 }
@@ -88,22 +91,24 @@
 /* --- Profile Card --- */
 .profile-card {
   width: 100%;
-  background: rgba(30, 20, 25, 0.75);
+  background: var(--bg-card);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(232, 168, 124, 0.1);
-  border-radius: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   padding: 45px 50px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--shadow-md);
 }
 
 .profile-section-title {
   color: #fff;
-  font-size: 1.3rem;
-  font-weight: 700;
+  font-size: 1.1rem;
+  font-weight: 600;
   margin-bottom: 30px;
   padding-bottom: 14px;
-  border-bottom: 1px solid rgba(232, 168, 124, 0.12);
+  border-bottom: 1px solid var(--border);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 /* --- Grid Fields --- */
@@ -121,9 +126,9 @@
 }
 
 .profile-field label {
-  color: #e8a87c;
+  color: var(--text-secondary);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -131,8 +136,8 @@
 .profile-field input,
 .profile-field select {
   padding: 14px 18px;
-  border-radius: 12px;
-  border: 1px solid rgba(232, 168, 124, 0.12);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
   background: rgba(0, 0, 0, 0.35);
   color: #fff;
   font-size: 0.95rem;
@@ -142,14 +147,14 @@
 
 .profile-field input:focus,
 .profile-field select:focus {
-  border-color: #e8a87c;
-  box-shadow: 0 0 14px rgba(232, 168, 124, 0.15);
-  background: rgba(232, 168, 124, 0.04);
+  border-color: var(--border-hover);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .profile-field input:disabled,
 .profile-field select:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -161,55 +166,57 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #e8a87c, #d4745f);
+  background: #fff;
   color: #0a0a0f;
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   padding: 14px 32px;
-  font-weight: 800;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 18px rgba(232, 168, 124, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-primary:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 28px rgba(232, 168, 124, 0.45);
+  background: #ccc;
 }
 
 .btn-secondary {
-  background: rgba(232, 168, 124, 0.1);
-  color: #e8a87c;
-  border: 1px solid rgba(232, 168, 124, 0.3);
-  border-radius: 12px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid var(--border-hover);
+  border-radius: var(--radius-md);
   padding: 14px 32px;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-secondary:hover {
-  background: rgba(232, 168, 124, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(232, 168, 124, 0.15);
+  background: var(--bg-card-hover);
 }
 
 .btn-cancel {
   background: transparent;
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  border-radius: 12px;
+  color: #ff4444;
+  border: 1px solid rgba(255, 68, 68, 0.3);
+  border-radius: var(--radius-md);
   padding: 14px 32px;
-  font-weight: 700;
-  font-size: 0.9rem;
+  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 107, 107, 0.08);
+  background: rgba(255, 68, 68, 0.08);
 }
 
 /* --- Responsive --- */

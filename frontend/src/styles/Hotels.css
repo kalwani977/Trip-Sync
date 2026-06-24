@@ -60,17 +60,17 @@
 .hotel-card-horizontal {
   position: relative;
   display: flex;
-  background: rgba(25, 20, 35, 0.85);
+  background: var(--bg-card);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   transition: all 0.3s ease;
 }
 
 .hotel-card-horizontal:hover {
-  border-color: rgba(154, 93, 184, 0.3);
-  transform: translateY(-4px);
+  border-color: rgba(255, 255, 255, 0.3);
+  
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
 }
 
@@ -90,7 +90,7 @@
 }
 
 .hotel-card-horizontal:hover .hotel-image-horizontal img {
-  transform: scale(1.05);
+  opacity: 0.9;
 }
 
 /* Details */
@@ -123,11 +123,11 @@
 
 .hotel-price span {
   font-weight: 700;
-  color: #4caf50;
+  color: #22c55e;
 }
 
 .hotel-rating {
-  color: #D4AF37 !important;
+  color: #fff !important;
 }
 
 .hotel-desc {
@@ -149,26 +149,26 @@
 }
 
 .view-hotel {
-  color: #9a5db8;
+  color: #fff;
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
   padding: 9px 18px;
-  border: 1px solid rgba(154, 93, 184, 0.3);
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-md);
   transition: 0.2s;
 }
 
 .view-hotel:hover {
-  background: rgba(154, 93, 184, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .add-hotel-btn {
-  background: linear-gradient(135deg, #9a5db8, #6a3d7d);
+  background: rgba(255, 255, 255, 0.1);
   color: white;
   border: none;
   padding: 9px 20px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.82rem;
   font-weight: 700;
@@ -178,13 +178,12 @@
 }
 
 .add-hotel-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(154, 93, 184, 0.3);
+  background: rgba(255,255,255,0.15);
 }
 
 .add-hotel-btn:disabled {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4caf50;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
@@ -207,15 +206,15 @@
   position: absolute;
   top: 14px;
   left: 14px;
-  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  background: linear-gradient(135deg, #22c55e, #16a34a);
   color: white;
   padding: 6px 14px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 0.7rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 2px 8px rgba(34, 197, 94, 0.4);
   z-index: 2;
 }
 

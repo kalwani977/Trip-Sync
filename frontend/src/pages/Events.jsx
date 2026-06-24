@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Nav from "../components/Nav";
 import "../styles/Events.css";
 import toast from "react-hot-toast";
 
@@ -138,8 +137,7 @@ const handleAddToCalendar = async (event) => {
   /* ---------------- UI ---------------- */
   return (
     <div className="background-containerr">
-      <Nav />
-      <div className="background-content">
+            <div className="background-content">
         {/* Google Calendar Status - subtle inline */}
         {!googleConnected && (
           <div className="gcal-bar">

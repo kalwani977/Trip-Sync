@@ -8,7 +8,7 @@ class ActionProvider {
 
   handleChat = async (message) => {
     // 1. Add "Thinking" message
-    const thinkingMsg = this.createChatBotMessage("Trekky is checking... ✨");
+    const thinkingMsg = this.createChatBotMessage("Trekky is checking... ");
     this.setState((prev) => ({
       ...prev,
       messages: [...prev.messages, thinkingMsg],
@@ -28,7 +28,7 @@ class ActionProvider {
         messages: [...prev.messages.slice(0, -1), botMessage],
       }));
     } catch (error) {
-      const errorMsg = this.createChatBotMessage("Service is currently offline. Please try again later. 💤");
+      const errorMsg = this.createChatBotMessage("Service is currently offline. Please try again later. ");
       this.setState((prev) => ({
         ...prev,
         messages: [...prev.messages.slice(0, -1), errorMsg],

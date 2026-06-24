@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Nav from "../components/Nav"; 
+ 
 import "../styles/Login.css";
 import toast from "react-hot-toast";
 
@@ -93,8 +93,7 @@ export default function Login() {
   if (showForgot) {
     return (
       <div className="login-page-wrapper">
-        <Nav />
-        <div className="login-container">
+                <div className="login-container">
           <div className="login-form">
             <div className="form-header">
               <h2>Reset Password</h2>
@@ -156,8 +155,7 @@ export default function Login() {
   // --- MAIN LOGIN/REGISTER UI ---
   return (
     <div className="login-page-wrapper">
-      <Nav />
-      <div className="login-container">
+            <div className="login-container">
         <form className={`login-form ${!isLogin ? "signup-mode" : ""}`} onSubmit={handleSubmit}>
           <div className="form-header">
             <h2>{isLogin ? "Welcome Back" : "Create Account"}</h2>

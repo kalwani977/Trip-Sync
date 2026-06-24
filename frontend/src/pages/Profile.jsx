@@ -1,7 +1,6 @@
 import toast from 'react-hot-toast';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Nav from "../components/Nav";
 import "../styles/profile.css";
 import { useNavigate } from "react-router-dom";
 
@@ -65,16 +64,14 @@ export default function Profile() {
   if (loading) {
     return (
       <div className="profile-page">
-        <Nav />
-        <div className="profile-loading">Loading profile...</div>
+                <div className="profile-loading">Loading profile...</div>
       </div>
     );
   }
 
   return (
     <div className="profile-page">
-      <Nav />
-
+      
       <div className="profile-center">
         {/* Avatar & Name */}
         <div className="profile-header-card">
@@ -184,16 +181,16 @@ export default function Profile() {
             {!isEditing ? (
               <>
                 <button type="button" className="btn-primary" onClick={() => setIsEditing(true)}>
-                  ✏️ Edit Profile
+                  Edit Profile
                 </button>
                 <button type="button" className="btn-secondary" onClick={() => navigate("/my-itineraries")}>
-                  📋 My Itineraries
+                  My Itineraries
                 </button>
               </>
             ) : (
               <>
                 <button type="button" className="btn-primary" onClick={handleSave}>
-                  💾 Save Changes
+                  Save Changes
                 </button>
                 <button type="button" className="btn-cancel" onClick={() => setIsEditing(false)}>
                   Cancel

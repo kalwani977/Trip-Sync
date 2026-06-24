@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Dashboard.css";
-import Nav from "../components/Nav";
-import BannerCarousel from "../components/BannerCarousel";
+import DestinationCarousel from "../components/DestinationCarousel";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -40,88 +39,68 @@ export default function Dashboard() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleExplore = (url) => {
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   const filteredCards = travelCards.filter(card =>
     card.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
     card.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="background-containerr">
-      <Nav />
+    <div className="dashboard-container">
+      
+      {/* --- HERO SECTION --- */}
+      <div className="hero-section">
+        <div className="hero-overlay">
+          <div className="hero-content">
+            <div className="hero-title">
+              <span className="small-line">plan your trip with</span>
+              <span className="big-line">TripSync</span>
+            </div>
+            
+            <div className="search-container">
+              <input 
+                type="text" 
+                placeholder="Where to? (e.g. Paris, Beach...)" 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
 
-      <div className="background-content">
-        <BannerCarousel />
-
-        {/* --- SEARCH BAR --- */}
-        
-
-        <div className="info-bar">
-          <div className="info-content">
-            <h3>Your All-in-One Travel Companion</h3>
-            <p>
-              Seamlessly <strong>Plan Destinations</strong>, book{" "}
-              <strong>Flights</strong>, and discover{" "}
-              <strong>Luxury Hotels</strong>.
-            </p>
-          </div>
-          <div className="info-stats">
-            <div className="stat-item"><span>500+</span> Flights</div>
-            <div className="stat-item"><span>200+</span> Hotels</div>
-            <div className="stat-item"><span>50+</span> Guides</div>
+            <div className="info-stats">
+              <div className="stat-item"><span>500+</span> Flights</div>
+              <div className="stat-item"><span>200+</span> Hotels</div>
+              <div className="stat-item"><span>50+</span> Guides</div>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="page-content">
         <div className="travel-section">
           <h2 className="section-title">
-            {searchTerm ? `Results for "${searchTerm}"` : "Discover Places & Plan Your Holidays"}
+            {searchTerm ? `Results for "${searchTerm}"` : "Trending Destinations"}
           </h2>
-
-          <div className="travel-grid">
-            {filteredCards.length > 0 ? (
-              filteredCards.map((card) => (
-                <div key={card.id} className="travel-card">
-                  <div className="card-image-wrapper">
-                    <img src={card.image} alt={card.location} />
-                  </div>
-                  <div className="card-details">
-                    <p className="card-category">{card.title}</p>
-                    <h4 className="card-location">{card.location}</h4>
-                    <p className="card-date">📅 {card.date}</p>
-                    <p className="card-desc">{card.description}</p>
-                    <button className="explore-btn" onClick={() => handleExplore(card.exploreUrl)}>
-                      EXPLORE
-                    </button>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="no-results">No destinations match your search. Try another vibe!</p>
-            )}
-          </div>
+          
+          <DestinationCarousel cards={filteredCards} />
         </div>
-
-        {/* --- FOOTER --- */}
-        <footer className="dashboard-footer">
-          <div className="footer-links">
-            <a href="#">About</a>
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Contact</a>
-          </div>
-          <p>© 2025 TripSync. All Rights Reserved.</p>
-        </footer>
-
-        {/* --- BACK TO TOP --- */}
-        {showBackToTop && (
-          <button className="back-to-top" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-            ↑
-          </button>
-        )}
       </div>
+
+      {/* --- FOOTER --- */}
+      <footer className="dashboard-footer">
+        <div className="footer-links">
+          <a href="#">About</a>
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Contact</a>
+        </div>
+        <p>© 2026 TripSync. All Rights Reserved.</p>
+      </footer>
+
+      {/* --- BACK TO TOP --- */}
+      {showBackToTop && (
+        <button className="back-to-top" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+          ↑
+        </button>
+      )}
     </div>
   );
 }

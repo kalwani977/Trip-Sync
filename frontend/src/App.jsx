@@ -7,12 +7,11 @@ import Itinerary from "./pages/Itinerary";
 import Login from "./pages/Login";
 import RouteFinder from "./pages/RouteFinder";
 import FlightSearch from "./pages/FlightSearch";
-import Weather from "./pages/Weather"; 
-import Events from "./pages/Events"; 
+import Weather from "./pages/Weather";
+import Events from "./pages/Events";
 import Hotels from "./pages/Hotels";
 import ItineraryCard from "./pages/ItineraryCard";
 import MyItineraries from "./pages/MyItineraries";
-import Compare from "./pages/Compare";
 import ChatbotWidget from "./components/Chatbot/ChatbotWidget";
 import { Toaster } from "react-hot-toast";
 
@@ -28,11 +27,10 @@ export default function App() {
         <Route path="/itinerary" element={<Itinerary />} />
         <Route path="/login" element={<Login />} />
         <Route path="/route" element={<RouteFinder />} />
-        <Route path="/flights" element={<FlightSearch />} /> 
-        <Route path="/weather" element={<Weather />} /> 
-        <Route path="/events" element={<Events />} /> 
-        <Route path="/hotels" element={<Hotels />} /> 
-        <Route path="/compare" element={<Compare />} />
+        <Route path="/flights" element={<FlightSearch />} />
+        <Route path="/weather" element={<Weather />} />
+        <Route path="/events" element={<Events />} />
+        <Route path="/hotels" element={<Hotels />} />
         <Route path="/itinerary/:id" element={<ItineraryCard />} />
         <Route path="/my-itineraries" element={<MyItineraries />} />
       </Routes>

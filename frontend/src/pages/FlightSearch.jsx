@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Nav from "../components/Nav";
 import "../styles/Flights.css";
 import toast from "react-hot-toast";
 
@@ -70,7 +69,7 @@ export default function Flights() {
         `${import.meta.env.VITE_API_URL}/api/itinerary/flight`,
         {
           itineraryId: trip.id,
-          flightdetails: flight,   // ✅ EXACT KEY BACKEND EXPECTS
+          flightdetails: flight,   // exact key backend expects
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -85,7 +84,7 @@ export default function Flights() {
         `${import.meta.env.VITE_API_URL}/api/itinerary/returnflight`,
         {
           itineraryId: trip.id,
-          returnflight: flight,   // ✅ EXACT KEY BACKEND EXPECTS
+          returnflight: flight,   // exact key backend expects
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -114,7 +113,7 @@ export default function Flights() {
 
     return (
       <div key={index} className="flight-card">
-        {isCheapest && <span className="best-value-badge">💰 Best Value</span>}
+        {isCheapest && <span className="best-value-badge">Best Value</span>}
         <div className="flight-header">
           {flight.airline_logo && (
             <img src={flight.airline_logo} alt={flight.airline} />
@@ -133,7 +132,7 @@ export default function Flights() {
           disabled={isDisabled}
           onClick={() => handleAddFlight(flight, type)}
         >
-          {isDisabled ? "✓ Selected" : "+ Add to Itinerary"}
+          {isDisabled ? "Selected" : "Add to Itinerary"}
         </button>
       </div>
     );
@@ -141,8 +140,7 @@ export default function Flights() {
 
   return (
     <div className="page-wrapper">
-      <Nav />
-
+      
       <main className="flights-page">
         <header className="flights-header">
           <h1 className="flights-title">Flights for your Trip</h1>
@@ -158,7 +156,7 @@ export default function Flights() {
           {/* GOING */}
           <section className="flights-section">
             
-                 <h2 >✈️ Going: {source} → {destination}</h2>
+                 <h2 >Going: {source} → {destination}</h2>
          
            
             <p className="flight-date">{startDate}</p>

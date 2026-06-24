@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Nav from "../components/Nav";
 import "../styles/Hotels.css";
 import toast from "react-hot-toast";
 
@@ -75,7 +74,7 @@ export default function Hotels() {
 
   return (
     <div key={index} className="hotel-card-horizontal">
-      {isBestDeal && <span className="best-deal-badge">🏆 Best Deal</span>}
+      {isBestDeal && <span className="best-deal-badge">Best Deal</span>}
       <div className="hotel-image-horizontal">
         <img
           src={hotel.thumbnail || FALLBACK_IMAGE}
@@ -107,7 +106,7 @@ export default function Hotels() {
             disabled={isDisabled}
             onClick={() => handleAddHotel(hotel)}
           >
-            {isDisabled ? "✓ Added" : "+ Add to Itinerary"}
+            {isDisabled ? "Added" : "Add to Itinerary"}
           </button>
         </div>
       </div>
@@ -118,8 +117,7 @@ export default function Hotels() {
 
   return (
     <div className="page-wrapper">
-      <Nav />
-      <main className="hotels-page">
+            <main className="hotels-page">
         <header className="hotels-header">
           <h1 className="hotels-title">Hotels in {city}</h1>
           <p className="hotels-dates">{checkIn} — {checkOut}</p>

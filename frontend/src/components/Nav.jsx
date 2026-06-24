@@ -1,92 +1,50 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, NavLink, useNavigate } from 'react-router-dom';
+import Sidebar from './Sidebar';
 import './Nav.css';
 
 export default function Nav() {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const getColor = () => {
-    switch (location.pathname) {
-      case "/": return "rgba(86, 42, 77, 0.7)"; // Darker glass for home
-      case "/planner": return "rgba(26, 44, 158, 0.4)";
-      case "/profile": return "rgba(110, 79, 126, 0.5)";
-      case "/login": return "rgba(0, 128, 128, 0.4)";
-      default: return "rgba(0, 0, 0, 0.5)";
-    }
-  };
-
-  const navRef = useRef(null);
-  const [markerStyle, setMarkerStyle] = useState({ left: 0, width: 0 });
-
-  const updateMarker = (el) => {
-    if (el) {
-      setMarkerStyle({
-        left: el.offsetLeft,
-        width: el.offsetWidth,
-      });
-    }
-  };
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const active = navRef.current?.querySelector('.active');
-    if (active) updateMarker(active);
-  }, [location.pathname]);
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
-  const handleLoginClick = () => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userId");
-      navigate("/login");
-    } else {
-      navigate("/login", { state: { from: location.pathname } });
-    }
-  };
-
-  const isLoggedIn = !!localStorage.getItem("token");
+  const isHomePage = location.pathname === '/';
+  const headerClass = `top-header ${(isScrolled || !isHomePage) ? 'scrolled' : ''}`;
 
   return (
-    <div
-      className="top-header"
-      style={{
-        backgroundColor: getColor(),
-      }}
-    >
-      <div className="brand" onClick={() => navigate("/")}>
-        <span className="brand-icon">✈</span> TripSync
+    <>
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      
+      <div className={headerClass}>
+        
+        <nav className="nav-left-links">
+          <NavLink to="/" className="nav-item">Home</NavLink>
+          <NavLink to="/planner" className="nav-item">Planner</NavLink>
+          <NavLink to="/my-itineraries" className="nav-item">Itineraries</NavLink>
+        </nav>
+
+        <div className="brand-center" onClick={() => navigate("/")}>
+          TRIPSYNC
+        </div>
+
+        <div className="nav-right">
+          <button className="hamburger-btn" onClick={() => setIsSidebarOpen(true)}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 12H20M4 6H20M4 18H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+        </div>
+
       </div>
-
-      <nav ref={navRef} className="nav-menu">
-        {['/', '/planner', '/compare', '/profile'].map((path, i) => {
-          const labels = ['Home', 'Planner', 'Compare', 'Profile'];
-          return (
-            <NavLink
-              key={path}
-              to={path}
-              className={({ isActive }) =>
-                isActive ? 'nav-item active' : 'nav-item'
-              }
-              onMouseEnter={(e) => updateMarker(e.target)}
-            >
-              {labels[i]}
-            </NavLink>
-          );
-        })}
-
-        <button
-          className="nav-item-login-btn"
-          onClick={handleLoginClick}
-        >
-          {isLoggedIn ? "Logout" : "Login"}
-        </button>
-
-        {/* The sliding underline */}
-        <span
-          className="marker"
-          style={{ left: markerStyle.left, width: markerStyle.width }}
-        />
-      </nav>
-    </div>
+    </>
   );
-}
+}

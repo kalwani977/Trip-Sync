@@ -1,6 +1,5 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Nav from "../components/Nav";
 import "../styles/Itinerary.css";
 
 export default function Itinerary() {
@@ -8,6 +7,7 @@ export default function Itinerary() {
   const navigate = useNavigate();
   const trip = location.state?.trip;
   const orchestratorResults = location.state?.orchestratorResults || {};
+  const currentBg = location.state?.currentBg || sessionStorage.getItem('currentBg') || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80';
 
   const agents = [
     { id: 1, label: "Events", desc: "Discover local events & festivals", icon: "E" },
@@ -44,8 +44,8 @@ export default function Itinerary() {
 
   return (
     <div className="itn-page">
-      <Nav />
-
+      <div className="itn-bg" style={{ backgroundImage: `url(${currentBg})` }} />
+      
       <div className="itn-content">
         {/* Trip Info Header */}
         <div className="itn-hero">

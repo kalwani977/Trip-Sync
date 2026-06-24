@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Polyline } from "react-leaflet";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
-import Nav from "../components/Nav";
 import "../styles/Route.css";
 import "leaflet/dist/leaflet.css";
 
@@ -52,8 +51,7 @@ export default function RouteFinder() {
 
   return (
     <div className="route-page-wrapper">
-      <Nav />
-      <div className="route-content">
+            <div className="route-content">
         {/* Header */}
         <div className="route-hero">
           <span className="route-label">ROUTE</span>

@@ -28,18 +28,18 @@
 .login-container {
   position: relative;
   z-index: 1;
-  padding-top: 100px;
+  /* padding-top removed (handled by Layout) */
   display: flex;
   justify-content: center;
   width: 100%;
 }
 
 .login-form {
-  background: rgba(43, 39, 39, 0.6); /* Matching your dashboard card alpha */
+  background: var(--bg-card); /* Matching your dashboard card alpha */
   backdrop-filter: blur(25px);
   -webkit-backdrop-filter: blur(25px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   padding: 50px;
   width: 450px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
@@ -77,7 +77,7 @@
   background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 14px 18px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #fff;
   font-size: 1rem;
   outline: none;
@@ -85,9 +85,9 @@
 }
 
 .login-form input:focus {
-  border-color: #9a5db8;
-  background: rgba(154, 93, 184, 0.05);
-  box-shadow: 0 0 15px rgba(154, 93, 184, 0.2);
+  border-color: #fff;
+  background: var(--border);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
 }
 
 .main-inputs {
@@ -101,9 +101,9 @@
   width: 100%;
   padding: 16px;
   margin-top: 30px;
-  background: linear-gradient(90deg, #735582, #9a5db8);
+  background: rgba(255, 255, 255, 0.1);
   border: none;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   color: #fff;
   font-weight: 800;
   font-size: 1rem;
@@ -113,8 +113,8 @@
 }
 
 .submit-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 25px rgba(154, 93, 184, 0.5);
+  
+  box-shadow: 0 10px 25px rgba(255, 255, 255, 0.5);
 }
 
 .toggle-text {
@@ -125,7 +125,7 @@
 }
 
 .toggle-link {
-  color: #9a5db8;
+  color: #fff;
   font-weight: 700;
   cursor: pointer;
   text-decoration: none;
@@ -150,7 +150,7 @@
 
 /* Forgot Password Link */
 .forgot-link {
-  color: #9a5db8;
+  color: #fff;
   font-size: 0.85rem;
   text-align: center;
   margin-top: 15px;
@@ -160,5 +160,5 @@
 
 .forgot-link:hover {
   text-decoration: underline;
-  color: #b77fd4;
+  color: #ccc;
 }

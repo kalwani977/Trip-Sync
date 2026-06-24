@@ -1,7 +1,8 @@
-/* Using the same grid from Dashboard/Events */
+/* ===== Weather Page ===== */
+
 .weather-card-flex {
   min-height: 320px;
-  justify-content: flex-start !important;
+  justify-content: flex-start;
 }
 
 .weather-info-body {
@@ -26,15 +27,15 @@
 
 .weather-temp-big {
   font-size: 2.5rem;
-  font-weight: 700;
+  font-weight: 600;
   color: white;
 }
 
 .weather-desc-text {
   text-transform: capitalize;
   font-weight: 500;
-  color: #9a5db8 !important;
-  margin: 5px 0 15px 0 !important;
+  color: #fff;
+  margin: 5px 0 15px 0;
 }
 
 .weather-stats-grid {
@@ -42,14 +43,15 @@
   grid-template-columns: 1fr 1fr;
   width: 100%;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px;
-  border-radius: 10px;
+  background: var(--bg-card);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
 }
 
 .w-stat {
   font-size: 0.85rem;
-  color: #bbb;
+  color: var(--text-secondary);
 }
 
 .weather-unavailable {
@@ -60,7 +62,10 @@
 
 .small-note {
   font-size: 0.7rem;
+  color: var(--text-tertiary);
 }
-.travel-grid{
-  margin-left: 50px;
+
+.travel-grid {
+  position: relative;
+  z-index: 1;
 }
