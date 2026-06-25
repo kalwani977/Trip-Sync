@@ -6,7 +6,7 @@
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
+  z-index: 1005;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.4s ease, visibility 0.4s ease;
@@ -21,20 +21,21 @@
 .sidebar {
   position: fixed;
   top: 0;
-  right: -100%; /* Slide from right completely hidden */
+  right: 0;
+  transform: translateX(100%);
   width: 100%;
   max-width: 320px;
   height: 100vh;
   background: #fff;
-  z-index: 1001;
-  transition: right 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+  z-index: 1006;
+  transition: transform 0.5s cubic-bezier(0.77, 0, 0.175, 1);
   display: flex;
   flex-direction: column;
   color: #000;
 }
 
 .sidebar.open {
-  right: 0;
+  transform: translateX(0);
 }
 
 /* Header */

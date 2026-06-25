@@ -13,6 +13,7 @@ import userRoutes from "./routes/userRoutes.js";
 import itineraryRoutes from "./routes/itineraryRoutes.js";
 import travelRoutes from "./routes/travelRoutes.js";
 import googleRoutes from "./routes/googleRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use("/api", userRoutes);
 app.use("/api/itinerary", itineraryRoutes);
 app.use("/api", travelRoutes);
 app.use("/api/google", googleRoutes);
+app.use("/api/ai", aiRoutes);
 
 
 

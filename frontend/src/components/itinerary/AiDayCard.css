@@ -1,0 +1,61 @@
+.ai-timeline-item {
+  margin-bottom: 2rem;
+}
+
+.ai-dot {
+  background: linear-gradient(135deg, #7b2cbf, #c77dff) !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.ai-day-card {
+  border: 1px solid rgba(199, 125, 255, 0.3) !important;
+  box-shadow: 0 10px 30px rgba(123, 44, 191, 0.1) !important;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+.ai-day-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ai-activities {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.ai-activity {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.ai-act-time {
+  background: rgba(199, 125, 255, 0.15);
+  color: #c77dff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  min-width: 90px;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+.ai-act-details h4 {
+  margin: 0 0 0.4rem 0;
+  font-size: 1.1rem;
+  color: #fff;
+}
+
+.ai-act-details p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+}

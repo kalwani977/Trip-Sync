@@ -19,6 +19,7 @@ export default function Profile() {
     email: "",
     phone_number: ""
   });
+  const [itineraries, setItineraries] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -28,12 +29,13 @@ export default function Profile() {
       return;
     }
 
-    axios
-      .get(`${import.meta.env.VITE_API_URL}/api/profile`, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then((res) => {
-        setProfile(res.data.user);
+    Promise.all([
+      axios.get(`${import.meta.env.VITE_API_URL}/api/profile`, { headers: { Authorization: `Bearer ${token}` } }),
+      axios.get(`${import.meta.env.VITE_API_URL}/api/itinerary`, { headers: { Authorization: `Bearer ${token}` } })
+    ])
+      .then(([profileRes, itinRes]) => {
+        setProfile(profileRes.data.user);
+        setItineraries(itinRes.data.itineraries || itinRes.data || []);
         setLoading(false);
       })
       .catch(() => {
@@ -68,6 +70,13 @@ export default function Profile() {
       </div>
     );
   }
+
+  const pastTrips = itineraries.filter(it => {
+    if (!it.enddate) return false;
+    const end = new Date(it.enddate);
+    end.setHours(23, 59, 59, 999);
+    return end < new Date();
+  });
 
   return (
     <div className="profile-page">
@@ -199,6 +208,32 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        {/* Past Trips Section */}
+        {pastTrips.length > 0 && (
+          <div className="profile-card" style={{ marginTop: "20px" }}>
+            <h3 className="profile-section-title">Past Trips</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+              {pastTrips.map(trip => (
+                <div key={trip._id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.05)", padding: "15px", borderRadius: "8px", borderLeft: "3px solid #7b2cbf" }}>
+                  <div>
+                    <h4 style={{ margin: "0 0 5px 0", color: "#fff", textTransform: "capitalize" }}>{trip.destination}</h4>
+                    <p style={{ margin: 0, color: "#888", fontSize: "0.85rem" }}>{trip.startdate} — {trip.enddate}</p>
+                  </div>
+                  <button 
+                    onClick={() => navigate(`/itinerary/${trip._id}`)}
+                    style={{ background: "transparent", color: "#c77dff", border: "1px solid #c77dff", borderRadius: "20px", padding: "6px 15px", cursor: "pointer", fontSize: "0.8rem", transition: "all 0.2s" }}
+                    onMouseOver={(e) => e.target.style.background = "rgba(199, 125, 255, 0.1)"}
+                    onMouseOut={(e) => e.target.style.background = "transparent"}
+                  >
+                    View
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

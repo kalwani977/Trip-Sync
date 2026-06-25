@@ -84,7 +84,7 @@
     height: 65px;
     padding: 0 15px;
   }
-  .brand { font-size: 1.1rem; gap: 6px; }
-  .brand-icon { font-size: 1.3rem; }
-  .nav-menu { display: none; /* Hide nav links on very small screens, use sidebar instead */ }
+  .brand-center { 
+    font-size: 1.2rem; 
+  }
 }

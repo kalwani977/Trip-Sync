@@ -28,7 +28,6 @@ export default function Nav() {
         
         <nav className="nav-left-links">
           <NavLink to="/" className="nav-item">Home</NavLink>
-          <NavLink to="/planner" className="nav-item">Planner</NavLink>
           <NavLink to="/my-itineraries" className="nav-item">Itineraries</NavLink>
         </nav>
 

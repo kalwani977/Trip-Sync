@@ -57,12 +57,25 @@ export default function Dashboard() {
             </div>
             
             <div className="search-container">
-              <input 
-                type="text" 
-                placeholder="Where to? (e.g. Paris, Beach...)" 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
+              <div className="hero-search-bar">
+                <input 
+                  type="text" 
+                  placeholder="Where do you want to go?" 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchTerm.trim()) {
+                      navigate('/planner', { state: { prefilledDestination: searchTerm } });
+                    }
+                  }}
+                />
+                <button 
+                  className="hero-search-btn"
+                  onClick={() => navigate("/planner", { state: { prefilledDestination: searchTerm } })}
+                >
+                  Plan Trip →
+                </button>
+              </div>
             </div>
 
             <div className="info-stats">

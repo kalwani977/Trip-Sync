@@ -1,14 +1,11 @@
 import express from "express";
 import { userMiddleware } from "../middleware/authMiddleware.js";
-import { 
-    getEvents, 
-    getFlights, 
-    getHotels, 
-    getRoute, 
-    getMapRoute, 
-    getWeather, 
-    orchestrateTrip 
-} from "../controllers/travelController.js";
+import { getEvents } from "../controllers/eventController.js";
+import { getFlights } from "../controllers/flightController.js";
+import { getHotels } from "../controllers/hotelController.js";
+import { getRoute, getMapRoute } from "../controllers/routeController.js";
+import { getWeather } from "../controllers/weatherController.js";
+import { orchestrateTrip } from "../controllers/orchestratorController.js";
 
 const router = express.Router();
 

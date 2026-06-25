@@ -23,7 +23,14 @@ export default function MyItineraries() {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then((res) => {
-        setItineraries(res.data.itineraries || res.data || []);
+        const allTrips = res.data.itineraries || res.data || [];
+        const upcomingTrips = allTrips.filter(it => {
+          if (!it.enddate) return true;
+          const end = new Date(it.enddate);
+          end.setHours(23, 59, 59, 999);
+          return end >= new Date();
+        });
+        setItineraries(upcomingTrips);
         setLoading(false);
       })
       .catch(() => {
@@ -42,6 +49,20 @@ export default function MyItineraries() {
   const capitalizeFirstLetter = (str) => {
     if (!str) return "";
     return str.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ");
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this itinerary? This action cannot be undone.")) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/itinerary/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setItineraries(itineraries.filter(it => it._id !== id));
+      toast.success("Itinerary deleted successfully");
+    } catch (err) {
+      toast.error("Failed to delete itinerary");
+    }
   };
 
   if (loading) {
@@ -104,9 +125,29 @@ export default function MyItineraries() {
                   )}
                 </div>
 
-                <button className="open-btn" onClick={() => navigate(`/itinerary/${it._id}`)}>
-                  View Itinerary
-                </button>
+                <div style={{ display: "flex", gap: "10px", marginTop: "1rem" }}>
+                  <button className="open-btn" style={{ flex: 1, margin: 0 }} onClick={() => navigate(`/itinerary/${it._id}`)}>
+                    View Itinerary
+                  </button>
+                  <button 
+                    onClick={() => handleDelete(it._id)}
+                    style={{
+                      padding: "0 1rem",
+                      background: "rgba(255, 50, 50, 0.1)",
+                      color: "#ff4d4d",
+                      border: "1px solid rgba(255, 50, 50, 0.3)",
+                      borderRadius: "8px",
+                      cursor: "pointer",
+                      fontSize: "1.2rem",
+                      transition: "all 0.2s"
+                    }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = "rgba(255, 50, 50, 0.2)" }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = "rgba(255, 50, 50, 0.1)" }}
+                    title="Delete Itinerary"
+                  >
+                    🗑️
+                  </button>
+                </div>
               </div>
             ))}
           </div>

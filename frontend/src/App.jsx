@@ -12,14 +12,14 @@ import Events from "./pages/Events";
 import Hotels from "./pages/Hotels";
 import ItineraryCard from "./pages/ItineraryCard";
 import MyItineraries from "./pages/MyItineraries";
-import ChatbotWidget from "./components/Chatbot/ChatbotWidget";
+import Nav from "./components/Nav";
 import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
     <div>
       <Toaster position="top-center" />
-      <ChatbotWidget />
+      <Nav />
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/planner" element={<TripPlanner />} />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import "../styles/TripPlanner.css";
 import ItenaryBg from "../assets/Profile.jpeg";
@@ -16,9 +16,10 @@ const DEFAULT_BG = ItenaryBg;
 
 export default function TripPlanner() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [startDestination, setStartDestination] = useState("");
-  const [destination, setDestination] = useState("");
+  const [destination, setDestination] = useState(location.state?.prefilledDestination || "");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [budget, setBudget] = useState("");

@@ -1,12 +1,48 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import './DestinationCarousel.css';
 
 export default function DestinationCarousel({ cards }) {
   const carouselRef = useRef(null);
 
+  // Duplicate cards 3 times to create an infinite scroll illusion
+  const infiniteCards = cards && cards.length > 0 
+    ? [...cards, ...cards, ...cards].map((card, index) => ({
+        ...card,
+        uniqueId: `${index}-${card.id}`
+      }))
+    : [];
+
+  const CARD_WIDTH = 320; // 300px width + 20px gap
+
+  useEffect(() => {
+    if (carouselRef.current && cards && cards.length > 0) {
+      // Start at the beginning of the middle set
+      carouselRef.current.scrollLeft = cards.length * CARD_WIDTH;
+    }
+  }, [cards]);
+
+  const handleScroll = () => {
+    if (!carouselRef.current || !cards || cards.length === 0) return;
+    
+    const { scrollLeft } = carouselRef.current;
+    const setWidth = cards.length * CARD_WIDTH;
+
+    // If scrolled into the first set (near the start)
+    if (scrollLeft < CARD_WIDTH) {
+      // Jump to the corresponding position in the middle set
+      carouselRef.current.scrollLeft += setWidth;
+    } 
+    // If scrolled into the third set (near the end)
+    else if (scrollLeft > setWidth * 2 - CARD_WIDTH) {
+      // Jump to the corresponding position in the middle set
+      carouselRef.current.scrollLeft -= setWidth;
+    }
+  };
+
   const scroll = (direction) => {
     if (carouselRef.current) {
-      const scrollAmount = direction === 'left' ? -320 : 320;
+      const scrollAmount = direction === 'left' ? -CARD_WIDTH : CARD_WIDTH;
+      // Use smooth behavior for manual button clicks
       carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
@@ -23,9 +59,13 @@ export default function DestinationCarousel({ cards }) {
     <div className="destination-carousel-container">
       <button className="carousel-nav-btn left" onClick={() => scroll('left')}>‹</button>
       
-      <div className="destination-carousel" ref={carouselRef}>
-        {cards.map((card) => (
-          <div key={card.id} className="carousel-card">
+      <div 
+        className="destination-carousel" 
+        ref={carouselRef}
+        onScroll={handleScroll}
+      >
+        {infiniteCards.map((card) => (
+          <div key={card.uniqueId} className="carousel-card">
             <div className="carousel-image-wrapper">
               <img src={card.image} alt={card.location} />
               <div className="carousel-overlay">

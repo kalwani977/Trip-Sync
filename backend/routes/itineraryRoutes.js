@@ -214,4 +214,56 @@ router.get("/", userMiddleware, async (req, res) => {
   }
 });
 
+router.delete("/:id", userMiddleware, async (req, res) => {
+  try {
+    const itinerary = await ItineraryModel.findOneAndDelete({
+      _id: req.params.id,
+      userId: req.userId
+    });
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found or unauthorized" });
+    }
+
+    res.json({ message: "Itinerary deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to delete itinerary" });
+  }
+});
+
+router.post("/remove-item", userMiddleware, async (req, res) => {
+  const { itineraryId, itemType } = req.body;
+  
+  if (!itineraryId || !itemType) {
+    return res.status(400).json({ message: "itineraryId and itemType are required" });
+  }
+
+  try {
+    const updateQuery = {};
+    if (itemType === "flight") {
+      updateQuery.$unset = { flightdetails: 1, returnflight: 1 };
+    } else if (itemType === "hotel") {
+      updateQuery.$unset = { hoteldetails: 1 };
+    } else {
+      return res.status(400).json({ message: "Invalid itemType" });
+    }
+
+    const itinerary = await ItineraryModel.findOneAndUpdate(
+      { _id: itineraryId, userId: req.userId },
+      updateQuery,
+      { new: true }
+    );
+
+    if (!itinerary) {
+      return res.status(404).json({ message: "Itinerary not found or unauthorized" });
+    }
+
+    res.json(itinerary);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Failed to remove item" });
+  }
+});
+
 export default router;

@@ -3,7 +3,7 @@
 .icard-page {
   min-height: 100vh;
   background: #0a0a0f;
-  /* padding-top removed (handled by Layout) */
+  padding-top: 100px;
   padding-bottom: 60px;
   position: relative;
   font-family: 'Inter', sans-serif;

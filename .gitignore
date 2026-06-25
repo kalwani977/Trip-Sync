@@ -6,6 +6,7 @@ backend/node_modules/
 # Environment variables (SECRETS)
 .env
 backend/.env
+frontend/.env
 
 # Build output
 frontend/dist/

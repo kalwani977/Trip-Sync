@@ -1,15 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import axios from "axios";
 import "../styles/ItineraryCard.css";
+import AiDayCard from "../components/itinerary/AiDayCard";
 
 export default function ItineraryDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [data, setData] = useState(null);
   const [weather, setWeather] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [bgImage, setBgImage] = useState("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80");
+  
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiPlan, setAiPlan] = useState(null);
 
   useEffect(() => {
     fetchItinerary();
@@ -53,6 +59,64 @@ export default function ItineraryDetails() {
     } catch (e) {
       // ignore
     }
+  };
+
+  const generateAiPlan = async () => {
+    if (!data) return;
+    setAiLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/ai/generate-itinerary`,
+        {
+          destination: data.destination,
+          startDate: data.startdate,
+          endDate: data.enddate,
+          flights: data.flightdetails ? [data.flightdetails, data.returnflight] : [],
+          hotels: data.hoteldetails ? [data.hoteldetails] : [],
+          events: data.events || [],
+          weather: weather
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success) {
+        setAiPlan(res.data.plan);
+      }
+    } catch (err) {
+      console.error("AI Generation failed", err);
+      alert("Failed to generate AI plan. Please check your GROQ_API_KEY in the backend .env");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleRemoveItem = async (itemType) => {
+    if (!window.confirm(`Are you sure you want to remove your ${itemType}?`)) return;
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/itinerary/remove-item`, {
+        itineraryId: id,
+        itemType
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setData(prev => ({
+        ...prev,
+        [itemType === 'flight' ? 'flightdetails' : 'hoteldetails']: null,
+        ...(itemType === 'flight' ? { returnflight: null } : {})
+      }));
+      toast.success(`${itemType} removed successfully`);
+    } catch (err) {
+      toast.error(`Failed to remove ${itemType}`);
+    }
+  };
+
+  const handleChangeItem = (itemType) => {
+    navigate(`/${itemType}s`, {
+      state: {
+        trip: { id, destination: data.destination, start: data.startdate, end: data.enddate }
+      }
+    });
   };
 
   const generateDates = (start, end) => {
@@ -121,9 +185,18 @@ export default function ItineraryDetails() {
             <span className="hero-badge">{tripDates.length} Days</span>
           </div>
 
-          {(data.flightdetails || data.returnflight) && (
-            <div className="bento-widget">
-              <h3 className="widget-title">Flights</h3>
+          <div className="bento-widget">
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '10px', marginBottom: '15px' }}>
+                <h3 className="widget-title" style={{ border: 'none', margin: 0, padding: 0 }}>Flights</h3>
+                {data.flightdetails || data.returnflight ? (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => handleChangeItem('flight')} style={{ background: 'transparent', color: '#ccc', border: '1px solid #555', borderRadius: '4px', fontSize: '0.7rem', padding: '2px 8px', cursor: 'pointer' }}>Change</button>
+                    <button onClick={() => handleRemoveItem('flight')} style={{ background: 'transparent', color: '#ff4d4d', border: '1px solid rgba(255, 77, 77, 0.3)', borderRadius: '4px', fontSize: '0.7rem', padding: '2px 8px', cursor: 'pointer' }}>Remove</button>
+                  </div>
+                ) : (
+                  <button onClick={() => handleChangeItem('flight')} style={{ background: '#7b2cbf', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', padding: '4px 12px', cursor: 'pointer' }}>+ Add</button>
+                )}
+              </div>
               {data.flightdetails && (
                 <div className="mini-flight">
                   <span className="mini-label">OUTBOUND</span>
@@ -150,22 +223,36 @@ export default function ItineraryDetails() {
                   </div>
                 </div>
               )}
+              {!data.flightdetails && !data.returnflight && (
+                <p style={{ color: "#888", fontSize: "0.85rem", textAlign: "center", margin: "10px 0" }}>No flights booked yet.</p>
+              )}
             </div>
-          )}
 
-          {data.hoteldetails && (
             <div className="bento-widget hotel-widget">
-              <h3 className="widget-title">Stay</h3>
-              <div className="mini-hotel">
-                <img src={data.hoteldetails.thumbnail} alt="" className="mini-hotel-img" />
-                <div className="mini-hotel-info">
-                  <h4>{data.hoteldetails.name}</h4>
-                  <span className="mini-rating">{data.hoteldetails.rating} / 5</span>
-                  <a href={data.hoteldetails.link} target="_blank" rel="noreferrer" className="mini-link">View Details</a>
-                </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', paddingBottom: '10px', marginBottom: '15px' }}>
+                <h3 className="widget-title" style={{ border: 'none', margin: 0, padding: 0 }}>Stay</h3>
+                {data.hoteldetails ? (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => handleChangeItem('hotel')} style={{ background: 'transparent', color: '#ccc', border: '1px solid #555', borderRadius: '4px', fontSize: '0.7rem', padding: '2px 8px', cursor: 'pointer' }}>Change</button>
+                    <button onClick={() => handleRemoveItem('hotel')} style={{ background: 'transparent', color: '#ff4d4d', border: '1px solid rgba(255, 77, 77, 0.3)', borderRadius: '4px', fontSize: '0.7rem', padding: '2px 8px', cursor: 'pointer' }}>Remove</button>
+                  </div>
+                ) : (
+                  <button onClick={() => handleChangeItem('hotel')} style={{ background: '#7b2cbf', color: 'white', border: 'none', borderRadius: '4px', fontSize: '0.8rem', padding: '4px 12px', cursor: 'pointer' }}>+ Add</button>
+                )}
               </div>
+              {data.hoteldetails ? (
+                <div className="mini-hotel">
+                  <img src={data.hoteldetails.thumbnail} alt="" className="mini-hotel-img" />
+                  <div className="mini-hotel-info">
+                    <h4>{data.hoteldetails.name}</h4>
+                    <span className="mini-rating">{data.hoteldetails.rating} / 5</span>
+                    <a href={data.hoteldetails.link} target="_blank" rel="noreferrer" className="mini-link">View Details</a>
+                  </div>
+                </div>
+              ) : (
+                <p style={{ color: "#888", fontSize: "0.85rem", textAlign: "center", margin: "10px 0" }}>No hotel booked yet.</p>
+              )}
             </div>
-          )}
 
           {budget && (
             <div className="bento-widget budget-widget">
@@ -189,12 +276,56 @@ export default function ItineraryDetails() {
 
         {/* Right Main Content (Vertical Timeline) */}
         <main className="icard-main">
-          <h2 className="timeline-header">Your Journey</h2>
+          <div className="timeline-header-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+            <h2 className="timeline-header" style={{ margin: 0 }}>Your Journey</h2>
+            {!aiPlan && (
+              <button 
+                onClick={generateAiPlan} 
+                disabled={aiLoading}
+                style={{
+                  background: "linear-gradient(135deg, #7b2cbf, #c77dff)",
+                  color: "white",
+                  border: "none",
+                  padding: "0.8rem 1.5rem",
+                  borderRadius: "30px",
+                  fontWeight: "bold",
+                  cursor: aiLoading ? "not-allowed" : "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                  boxShadow: "0 4px 15px rgba(123, 44, 191, 0.3)",
+                  transition: "transform 0.2s"
+                }}
+              >
+                {aiLoading ? "Generating..." : "AI Magic Plan"}
+              </button>
+            )}
+          </div>
           
           <div className="timeline">
-            {tripDates.map((dateStr, index) => {
-              const weatherData = getWeatherForDate(dateStr);
-              const dayEvents = (data.events || []).filter(e => e.date === dateStr);
+            {aiPlan ? (
+              aiPlan.map((dayPlan, idx) => (
+                <AiDayCard 
+                  key={idx} 
+                  dayPlan={dayPlan} 
+                  weatherData={getWeatherForDate(dayPlan.date)} 
+                />
+              ))
+            ) : (
+              tripDates.map((dateStr, index) => {
+                const weatherData = getWeatherForDate(dateStr);
+              
+              // Distribute 'Ongoing' Foursquare events across days evenly
+              const dayEvents = (data.events || []).filter((e, idx) => {
+                if (e.date === dateStr) return true;
+                if (e.date === "Ongoing") {
+                  if (tripDates.length <= 2) return idx % tripDates.length === index;
+                  const middleDays = Math.max(1, tripDates.length - 2);
+                  const targetDay = index > 0 && index < tripDates.length - 1 ? ((index - 1) % middleDays) : -1;
+                  return targetDay !== -1 && (idx % middleDays === targetDay);
+                }
+                return false;
+              });
               
               return (
                 <div key={index} className="timeline-item">
@@ -236,7 +367,7 @@ export default function ItineraryDetails() {
                   </div>
                 </div>
               );
-            })}
+            }))}
           </div>
         </main>
 

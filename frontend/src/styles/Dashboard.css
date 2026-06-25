@@ -66,25 +66,57 @@
 /* --- Search Container --- */
 .search-container {
   width: 100%;
-  max-width: 500px;
+  max-width: 520px;
   margin: 0 0 40px 0;
 }
 
-.search-container input {
-  width: 100%;
-  padding: 18px 28px;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.08);
+.hero-search-bar {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.hero-search-bar:focus-within {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hero-search-bar input {
+  flex: 1;
+  padding: 16px 22px;
+  background: transparent;
+  border: none;
   color: white;
   font-size: 1rem;
   outline: none;
-  transition: background 0.3s, border-color 0.3s;
 }
 
-.search-container input:focus {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: #fff;
+.hero-search-bar input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.hero-search-btn {
+  padding: 10px 22px;
+  margin: 5px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.hero-search-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 /* --- Info Stats in Hero --- */
