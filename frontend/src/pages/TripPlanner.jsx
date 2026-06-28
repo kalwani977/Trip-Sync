@@ -14,6 +14,25 @@ function daysBetween(startStr, endStr) {
 
 const DEFAULT_BG = ItenaryBg;
 
+const TRAVEL_STYLES = [
+  { id: "adventure", label: "Adventure", emoji: "🏔️" },
+  { id: "relaxed", label: "Relaxed", emoji: "🌴" },
+  { id: "cultural", label: "Cultural", emoji: "🏛️" },
+  { id: "foodie", label: "Foodie", emoji: "🍜" },
+  { id: "nightlife", label: "Nightlife", emoji: "🌃" },
+  { id: "family", label: "Family-Friendly", emoji: "👨‍👩‍👧‍👦" },
+  { id: "romantic", label: "Romantic", emoji: "💕" },
+  { id: "budget", label: "Budget-Conscious", emoji: "💰" },
+];
+
+const DIETARY_OPTIONS = [
+  { id: "none", label: "No Preference" },
+  { id: "vegetarian", label: "Vegetarian" },
+  { id: "vegan", label: "Vegan" },
+  { id: "halal", label: "Halal" },
+  { id: "gluten-free", label: "Gluten-Free" },
+];
+
 export default function TripPlanner() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,6 +46,33 @@ export default function TripPlanner() {
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1);
   const [userCity, setUserCity] = useState("");
+
+  // Preferences state
+  const [travelStyle, setTravelStyle] = useState([]);
+  const [interests, setInterests] = useState("");
+  const [pace, setPace] = useState("moderate");
+  const [mustSee, setMustSee] = useState("");
+  const [dietary, setDietary] = useState([]);
+  const [avoid, setAvoid] = useState("");
+
+  const toggleTravelStyle = (id) => {
+    setTravelStyle(prev =>
+      prev.includes(id) ? prev.filter(s => s !== id) : [...prev, id]
+    );
+  };
+
+  const toggleDietary = (id) => {
+    if (id === "none") {
+      setDietary(["none"]);
+      return;
+    }
+    setDietary(prev => {
+      const without = prev.filter(d => d !== "none");
+      return without.includes(id) ? without.filter(d => d !== id) : [...without, id];
+    });
+  };
+
+  const TOTAL_STEPS = 5;
 
   const handleNext = () => {
     if (step === 1 && !startDestination) { setError("Please tell us where you're starting from."); return; }
@@ -44,10 +90,8 @@ export default function TripPlanner() {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      if (step < 4) handleNext();
-      // Step 4 enter will be handled by form submit natively if focus is right, 
-      // but let's handle it manually just in case
-      if (step === 4 && !loading) {
+      if (step < TOTAL_STEPS) handleNext();
+      if (step === TOTAL_STEPS && !loading) {
         document.getElementById("wizard-form").requestSubmit();
       }
     }
@@ -55,7 +99,7 @@ export default function TripPlanner() {
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    if (step < 4) {
+    if (step < TOTAL_STEPS) {
       handleNext();
     } else {
       handleGenerate(e);
@@ -156,6 +200,16 @@ export default function TripPlanner() {
       return;
     }
 
+    // Collect preferences
+    const preferences = {
+      travelStyle: travelStyle.length > 0 ? travelStyle : null,
+      interests: interests.trim() || null,
+      pace,
+      mustSee: mustSee.trim() || null,
+      dietary: dietary.length > 0 && !dietary.includes("none") ? dietary : null,
+      avoid: avoid.trim() || null,
+    };
+
     try {
       setLoading(true);
       setShowAgents(true);
@@ -181,7 +235,7 @@ export default function TripPlanner() {
       // 2. Run all agents in parallel
       const agentPromises = [
         // Weather Agent
-        axios.get(`${import.meta.env.VITE_API_URL}/api/weather?city=${destination}`)
+        axios.get(`${import.meta.env.VITE_API_URL}/api/weather?city=${destination}`, { headers: { Authorization: `Bearer ${token}` } })
           .then(res => {
             updateAgent("weather", "done");
             return { type: 'weather', data: res.data };
@@ -193,7 +247,7 @@ export default function TripPlanner() {
           startCity: startDestination,
           endCity: destination,
           mode: "driving-car"
-        })
+        }, { headers: { Authorization: `Bearer ${token}` } })
           .then(res => {
             updateAgent("route", "done");
             return { type: 'route', data: res.data };
@@ -202,7 +256,8 @@ export default function TripPlanner() {
 
         // Flights Agent
         axios.get(`${import.meta.env.VITE_API_URL}/api/flights`, {
-          params: { from: startDestination, to: destination, out_date: start }
+          params: { from: startDestination, to: destination, out_date: start },
+          headers: { Authorization: `Bearer ${token}` }
         })
           .then(res => {
             updateAgent("flights", "done");
@@ -212,7 +267,8 @@ export default function TripPlanner() {
 
         // Hotels Agent
         axios.get(`${import.meta.env.VITE_API_URL}/api/hotels`, {
-          params: { city: destination, check_in: start, check_out: end }
+          params: { city: destination, check_in: start, check_out: end },
+          headers: { Authorization: `Bearer ${token}` }
         })
           .then(res => {
             updateAgent("hotels", "done");
@@ -222,7 +278,8 @@ export default function TripPlanner() {
 
         // Events Agent
         axios.get(`${import.meta.env.VITE_API_URL}/api/events`, {
-          params: { city: destination, start_date: start, end_date: end }
+          params: { city: destination, start_date: start, end_date: end },
+          headers: { Authorization: `Bearer ${token}` }
         })
           .then(res => {
             updateAgent("events", "done");
@@ -257,11 +314,12 @@ export default function TripPlanner() {
 
       const currentBg = activeBgRef.current === 1 ? bg1 : bg2;
       sessionStorage.setItem('currentBg', currentBg);
-      navigate("/itinerary", { state: { trip, orchestratorResults, currentBg } });
+      navigate("/itinerary", { state: { trip, orchestratorResults, currentBg, preferences } });
 
     } catch (err) {
-      console.error(err);
-      setError("Failed to create itinerary.");
+      console.error(err.response?.data || err.message);
+      setError(err.response?.data?.message || "Failed to create itinerary.");
+      setShowAgents(false);
     } finally {
       setLoading(false);
     }
@@ -329,7 +387,102 @@ export default function TripPlanner() {
             {step === 4 && (
               <div className="wizard-step">
                 <h1 className="wizard-question">What's your total budget?</h1>
-                <input autoFocus enterKeyHint="done" className="wizard-input" type="number" min="0" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="₹ (Optional)" />
+                <input autoFocus enterKeyHint="next" className="wizard-input" type="number" min="0" value={budget} onChange={(e) => setBudget(e.target.value)} placeholder="₹ (Optional)" />
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="wizard-step pref-step">
+                <h1 className="wizard-question">Personalize your trip</h1>
+                <p className="pref-subtitle">Tell us what you love — we'll tailor your itinerary. All fields are optional.</p>
+
+                {/* Travel Style Chips */}
+                <div className="pref-section">
+                  <label className="pref-label">Travel Style</label>
+                  <div className="pref-chips">
+                    {TRAVEL_STYLES.map(s => (
+                      <button
+                        key={s.id}
+                        type="button"
+                        className={`pref-chip ${travelStyle.includes(s.id) ? "active" : ""}`}
+                        onClick={() => toggleTravelStyle(s.id)}
+                      >
+                        <span className="chip-emoji">{s.emoji}</span>
+                        {s.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Pace Selector */}
+                <div className="pref-section">
+                  <label className="pref-label">Pace</label>
+                  <div className="pace-selector">
+                    {[
+                      { value: "packed", label: "Packed", desc: "See everything" },
+                      { value: "moderate", label: "Moderate", desc: "Balanced" },
+                      { value: "relaxed", label: "Relaxed", desc: "Take it easy" },
+                    ].map(p => (
+                      <button
+                        key={p.value}
+                        type="button"
+                        className={`pace-option ${pace === p.value ? "active" : ""}`}
+                        onClick={() => setPace(p.value)}
+                      >
+                        <span className="pace-label">{p.label}</span>
+                        <span className="pace-desc">{p.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Dietary Chips */}
+                <div className="pref-section">
+                  <label className="pref-label">Dietary Preferences</label>
+                  <div className="pref-chips">
+                    {DIETARY_OPTIONS.map(d => (
+                      <button
+                        key={d.id}
+                        type="button"
+                        className={`pref-chip small ${dietary.includes(d.id) ? "active" : ""}`}
+                        onClick={() => toggleDietary(d.id)}
+                      >
+                        {d.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Free text inputs */}
+                <div className="pref-section">
+                  <label className="pref-label">Interests</label>
+                  <input
+                    className="pref-text-input"
+                    value={interests}
+                    onChange={(e) => setInterests(e.target.value)}
+                    placeholder="e.g. street food, hiking, art museums..."
+                  />
+                </div>
+
+                <div className="pref-section">
+                  <label className="pref-label">Must-see Places</label>
+                  <input
+                    className="pref-text-input"
+                    value={mustSee}
+                    onChange={(e) => setMustSee(e.target.value)}
+                    placeholder="e.g. Eiffel Tower, Louvre Museum..."
+                  />
+                </div>
+
+                <div className="pref-section">
+                  <label className="pref-label">Anything to Avoid?</label>
+                  <input
+                    className="pref-text-input"
+                    value={avoid}
+                    onChange={(e) => setAvoid(e.target.value)}
+                    placeholder="e.g. crowded tourist traps, long walks..."
+                  />
+                </div>
               </div>
             )}
 
@@ -339,13 +492,12 @@ export default function TripPlanner() {
               </button>
               
               <div className="page-numbers">
-                <span className={step === 1 ? 'active' : ''}>1</span>
-                <span className={step === 2 ? 'active' : ''}>2</span>
-                <span className={step === 3 ? 'active' : ''}>3</span>
-                <span className={step === 4 ? 'active' : ''}>4</span>
+                {[1, 2, 3, 4, 5].map(n => (
+                  <span key={n} className={step === n ? 'active' : ''}>{n}</span>
+                ))}
               </div>
 
-              {step < 4 ? (
+              {step < TOTAL_STEPS ? (
                 <button type="button" className="page-nav" onClick={handleNext}>
                   &gt;
                 </button>

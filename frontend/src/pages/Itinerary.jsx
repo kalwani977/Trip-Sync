@@ -8,6 +8,14 @@ export default function Itinerary() {
   const trip = location.state?.trip;
   const orchestratorResults = location.state?.orchestratorResults || {};
   const currentBg = location.state?.currentBg || sessionStorage.getItem('currentBg') || 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1920&q=80';
+  const preferences = location.state?.preferences || null;
+
+  // Persist preferences for ItineraryCard to use
+  React.useEffect(() => {
+    if (preferences) {
+      sessionStorage.setItem('tripPreferences', JSON.stringify(preferences));
+    }
+  }, [preferences]);
 
   const agents = [
     { id: 1, label: "Events", desc: "Discover local events & festivals", icon: "E" },

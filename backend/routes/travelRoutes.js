@@ -9,12 +9,12 @@ import { orchestrateTrip } from "../controllers/orchestratorController.js";
 
 const router = express.Router();
 
-router.get('/events', getEvents);
-router.get('/flights', getFlights);
-router.get('/hotels', getHotels);
-router.get('/route', getRoute);
-router.post('/map', getMapRoute);
-router.get('/weather', getWeather);
+router.get('/events', userMiddleware, getEvents);
+router.get('/flights', userMiddleware, getFlights);
+router.get('/hotels', userMiddleware, getHotels);
+router.get('/route', userMiddleware, getRoute);
+router.post('/map', userMiddleware, getMapRoute);
+router.get('/weather', userMiddleware, getWeather);
 router.post('/orchestrate', userMiddleware, orchestrateTrip);
 
 export default router;

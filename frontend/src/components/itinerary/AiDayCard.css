@@ -1,61 +1,299 @@
-.ai-timeline-item {
-  margin-bottom: 2rem;
+/* === AI Day Card Styles === */
+
+.ai-day-card {
+  position: relative;
+}
+
+.ai-day-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.day-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .ai-dot {
   background: linear-gradient(135deg, #7b2cbf, #c77dff) !important;
+  box-shadow: 0 0 12px rgba(123, 44, 191, 0.4);
+}
+
+/* Editable Text Hover */
+.editable-title {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.editable-title:hover {
+  color: #c77dff;
+}
+
+.editable-text {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
+  padding: 1px 4px;
+  margin: -1px -4px;
+}
+.editable-text:hover {
+  background: rgba(199, 125, 255, 0.1);
+  color: #e0c0ff;
+}
+
+/* Activity Controls (show on hover) */
+.ai-activity {
+  position: relative;
+}
+
+.ai-act-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  position: absolute;
+  right: -8px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.ai-activity:hover .ai-act-controls {
+  opacity: 1;
+}
+
+.ai-ctrl-btn {
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.65rem;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  transition: all 0.2s;
+  padding: 0;
+  line-height: 1;
 }
 
-.ai-day-card {
-  border: 1px solid rgba(199, 125, 255, 0.3) !important;
-  box-shadow: 0 10px 30px rgba(123, 44, 191, 0.1) !important;
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-}
-
-.ai-day-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding-bottom: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.ai-activities {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.ai-activity {
-  display: flex;
-  gap: 1.5rem;
-  align-items: flex-start;
-}
-
-.ai-act-time {
-  background: rgba(199, 125, 255, 0.15);
-  color: #c77dff;
-  padding: 0.4rem 0.8rem;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  min-width: 90px;
-  text-align: center;
-  letter-spacing: 0.5px;
-}
-
-.ai-act-details h4 {
-  margin: 0 0 0.4rem 0;
-  font-size: 1.1rem;
+.ai-ctrl-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
   color: #fff;
 }
 
-.ai-act-details p {
-  margin: 0;
-  font-size: 0.95rem;
+.ai-ctrl-btn.delete:hover {
+  background: rgba(255, 77, 77, 0.25);
+  color: #ff6b6b;
+}
+
+.ai-ctrl-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+/* Edit Mode */
+.ai-activity.editing {
+  background: rgba(123, 44, 191, 0.08);
+  border-radius: 10px;
+  padding: 12px;
+  margin: -4px -8px;
+}
+
+.ai-activity-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.ai-edit-time {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  font-family: inherit;
+  outline: none;
+  width: fit-content;
+  cursor: pointer;
+}
+.ai-edit-time option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+.ai-edit-title {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #fff;
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.ai-edit-title:focus {
+  border-color: rgba(199, 125, 255, 0.5);
+}
+
+.ai-edit-desc {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.85);
+  padding: 8px 12px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 40px;
+  transition: border-color 0.2s;
+}
+.ai-edit-desc:focus {
+  border-color: rgba(199, 125, 255, 0.4);
+}
+
+.ai-edit-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.ai-btn-sm {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.ai-btn-sm.save {
+  background: rgba(123, 44, 191, 0.5);
+  color: #fff;
+}
+.ai-btn-sm.save:hover {
+  background: rgba(123, 44, 191, 0.75);
+}
+
+.ai-btn-sm.cancel {
+  background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.7);
-  line-height: 1.5;
+}
+.ai-btn-sm.cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* Day Title Edit */
+.day-title-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.day-num-label {
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.day-title-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(199, 125, 255, 0.4);
+  border-radius: 6px;
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  flex: 1;
+  min-width: 120px;
+}
+
+/* Regenerate Day Button */
+.regen-day-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 1rem;
+  padding: 5px 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  line-height: 1;
+}
+.regen-day-btn:hover:not(:disabled) {
+  background: rgba(123, 44, 191, 0.25);
+  border-color: rgba(199, 125, 255, 0.4);
+  color: #c77dff;
+}
+.regen-day-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Regenerating animation */
+.ai-timeline-item.regenerating .ai-day-card {
+  animation: regenPulse 1.5s infinite ease-in-out;
+}
+@keyframes regenPulse {
+  0%, 100% { opacity: 1; border-color: rgba(255, 255, 255, 0.1); }
+  50% { opacity: 0.6; border-color: rgba(199, 125, 255, 0.3); }
+}
+
+/* Add Activity */
+.ai-add-section {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ai-add-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  padding: 10px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: inherit;
+}
+.ai-add-btn:hover {
+  border-color: rgba(199, 125, 255, 0.3);
+  color: #c77dff;
+  background: rgba(123, 44, 191, 0.06);
+}
+
+.ai-add-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .ai-act-controls {
+    opacity: 1;
+    position: static;
+    transform: none;
+    flex-direction: row;
+    margin-top: 6px;
+  }
+  .day-title-edit-row {
+    flex-wrap: wrap;
+  }
 }

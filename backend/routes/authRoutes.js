@@ -13,7 +13,19 @@ const passwordResetLimiter = rateLimit({
   message: { status: "Too many password reset requests from this IP, please try again after 15 minutes" }
 });
 
-router.post("/register", async (req, res) => {
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10,
+  message: { status: "Too many login attempts, please try again after 15 minutes" }
+});
+
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 5,
+  message: { status: "Too many accounts created from this IP, please try again after an hour" }
+});
+
+router.post("/register", registerLimiter, async (req, res) => {
   const { 
     username,
     email,
@@ -29,6 +41,10 @@ router.post("/register", async (req, res) => {
    } = req.body;
   if (!username || !email || !password) {
     return res.status(400).json({ status: "Provide username, email, and password" });
+  }
+  
+  if (password.length < 6) {
+    return res.status(400).json({ status: "Password must be at least 6 characters long" });
   }
 
   try {
@@ -54,11 +70,14 @@ router.post("/register", async (req, res) => {
 
     res.json({ status: "Signup successful", userId: user._id });
   } catch (err) {
-    res.status(500).json({ status: "Server error", error: err.message });
+    if (err.code === 11000) {
+      return res.status(400).json({ status: "Username or email already exists" });
+    }
+    res.status(500).json({ status: "Server error", error: "An unexpected error occurred" });
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", loginLimiter, async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ status: "Provide email and password" });
 

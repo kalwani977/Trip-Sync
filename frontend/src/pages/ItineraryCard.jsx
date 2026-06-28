@@ -16,6 +16,16 @@ export default function ItineraryDetails() {
   
   const [aiLoading, setAiLoading] = useState(false);
   const [aiPlan, setAiPlan] = useState(null);
+  const [regeneratingDay, setRegeneratingDay] = useState(null);
+  const [hasEdits, setHasEdits] = useState(false);
+
+  // Retrieve user preferences from sessionStorage (set by TripPlanner → Itinerary flow)
+  const getPreferences = () => {
+    try {
+      const stored = sessionStorage.getItem('tripPreferences');
+      return stored ? JSON.parse(stored) : null;
+    } catch { return null; }
+  };
 
   useEffect(() => {
     fetchItinerary();
@@ -75,20 +85,110 @@ export default function ItineraryDetails() {
           flights: data.flightdetails ? [data.flightdetails, data.returnflight] : [],
           hotels: data.hoteldetails ? [data.hoteldetails] : [],
           events: data.events || [],
-          weather: weather
+          weather: weather,
+          preferences: getPreferences()
         },
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
         setAiPlan(res.data.plan);
+        setHasEdits(false);
       }
     } catch (err) {
       console.error("AI Generation failed", err);
-      alert("Failed to generate AI plan. Please check your GROQ_API_KEY in the backend .env");
+      toast.error("Failed to generate AI plan. Check your GROQ_API_KEY.");
     } finally {
       setAiLoading(false);
     }
   };
+
+  // ===== AI Plan Mutation Functions =====
+
+  const handleEditActivity = (dayNum, actIdx, updatedActivity) => {
+    setAiPlan(prev => prev.map(day => {
+      if (day.day !== dayNum) return day;
+      const newActivities = [...day.activities];
+      newActivities[actIdx] = updatedActivity;
+      return { ...day, activities: newActivities };
+    }));
+    setHasEdits(true);
+    toast.success("Activity updated");
+  };
+
+  const handleDeleteActivity = (dayNum, actIdx) => {
+    setAiPlan(prev => prev.map(day => {
+      if (day.day !== dayNum) return day;
+      const newActivities = day.activities.filter((_, i) => i !== actIdx);
+      return { ...day, activities: newActivities };
+    }));
+    setHasEdits(true);
+    toast.success("Activity removed");
+  };
+
+  const handleAddActivity = (dayNum, newActivity) => {
+    setAiPlan(prev => prev.map(day => {
+      if (day.day !== dayNum) return day;
+      return { ...day, activities: [...day.activities, newActivity] };
+    }));
+    setHasEdits(true);
+    toast.success("Activity added");
+  };
+
+  const handleMoveActivity = (dayNum, actIdx, direction) => {
+    setAiPlan(prev => prev.map(day => {
+      if (day.day !== dayNum) return day;
+      const newActivities = [...day.activities];
+      const targetIdx = direction === "up" ? actIdx - 1 : actIdx + 1;
+      if (targetIdx < 0 || targetIdx >= newActivities.length) return day;
+      [newActivities[actIdx], newActivities[targetIdx]] = [newActivities[targetIdx], newActivities[actIdx]];
+      return { ...day, activities: newActivities };
+    }));
+    setHasEdits(true);
+  };
+
+  const handleEditDayTitle = (dayNum, newTitle) => {
+    setAiPlan(prev => prev.map(day => {
+      if (day.day !== dayNum) return day;
+      return { ...day, title: newTitle };
+    }));
+    setHasEdits(true);
+    toast.success("Day title updated");
+  };
+
+  const handleRegenerateDay = async (dayNum, dayDate) => {
+    if (!data) return;
+    setRegeneratingDay(dayNum);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/ai/regenerate-day`,
+        {
+          destination: data.destination,
+          startDate: data.startdate,
+          endDate: data.enddate,
+          dayNumber: dayNum,
+          dayDate: dayDate,
+          existingPlan: aiPlan,
+          preferences: getPreferences()
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.success && res.data.dayPlan) {
+        setAiPlan(prev => prev.map(day => 
+          day.day === dayNum ? { ...res.data.dayPlan, day: dayNum } : day
+        ));
+        setHasEdits(true);
+        toast.success(`Day ${dayNum} regenerated!`);
+      }
+    } catch (err) {
+      console.error("Regenerate day failed", err);
+      toast.error("Failed to regenerate day. Try again.");
+    } finally {
+      setRegeneratingDay(null);
+    }
+  };
+
+  // ===== End Mutation Functions =====
 
   const handleRemoveItem = async (itemType) => {
     if (!window.confirm(`Are you sure you want to remove your ${itemType}?`)) return;
@@ -276,9 +376,36 @@ export default function ItineraryDetails() {
 
         {/* Right Main Content (Vertical Timeline) */}
         <main className="icard-main">
-          <div className="timeline-header-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+          <div className="timeline-header-container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", flexWrap: "wrap", gap: "12px" }}>
             <h2 className="timeline-header" style={{ margin: 0 }}>Your Journey</h2>
-            {!aiPlan && (
+            <div style={{ display: "flex", gap: "10px", alignItems: "center", flexWrap: "wrap" }}>
+              {aiPlan && hasEdits && (
+                <span style={{
+                  color: "rgba(199, 125, 255, 0.8)",
+                  fontSize: "0.78rem",
+                  fontStyle: "italic"
+                }}>
+                  Unsaved edits
+                </span>
+              )}
+              {aiPlan && (
+                <button 
+                  onClick={() => { setAiPlan(null); setHasEdits(false); }}
+                  style={{
+                    background: "rgba(255, 255, 255, 0.06)",
+                    color: "rgba(255, 255, 255, 0.65)",
+                    border: "1px solid rgba(255, 255, 255, 0.12)",
+                    padding: "0.6rem 1.2rem",
+                    borderRadius: "30px",
+                    fontWeight: "500",
+                    cursor: "pointer",
+                    fontSize: "0.85rem",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  Reset to Default
+                </button>
+              )}
               <button 
                 onClick={generateAiPlan} 
                 disabled={aiLoading}
@@ -286,7 +413,7 @@ export default function ItineraryDetails() {
                   background: "linear-gradient(135deg, #7b2cbf, #c77dff)",
                   color: "white",
                   border: "none",
-                  padding: "0.8rem 1.5rem",
+                  padding: "0.7rem 1.4rem",
                   borderRadius: "30px",
                   fontWeight: "bold",
                   cursor: aiLoading ? "not-allowed" : "pointer",
@@ -294,21 +421,29 @@ export default function ItineraryDetails() {
                   alignItems: "center",
                   gap: "0.5rem",
                   boxShadow: "0 4px 15px rgba(123, 44, 191, 0.3)",
-                  transition: "transform 0.2s"
+                  transition: "transform 0.2s",
+                  fontSize: "0.85rem"
                 }}
               >
-                {aiLoading ? "Generating..." : "AI Magic Plan"}
+                {aiLoading ? "Generating..." : aiPlan ? "🔄 Regenerate Full Plan" : "✨ AI Magic Plan"}
               </button>
-            )}
+            </div>
           </div>
           
           <div className="timeline">
             {aiPlan ? (
               aiPlan.map((dayPlan, idx) => (
                 <AiDayCard 
-                  key={idx} 
+                  key={`${dayPlan.day}-${idx}`} 
                   dayPlan={dayPlan} 
                   weatherData={getWeatherForDate(dayPlan.date)} 
+                  onEditActivity={handleEditActivity}
+                  onDeleteActivity={handleDeleteActivity}
+                  onAddActivity={handleAddActivity}
+                  onMoveActivity={handleMoveActivity}
+                  onEditDayTitle={handleEditDayTitle}
+                  onRegenerateDay={handleRegenerateDay}
+                  isRegenerating={regeneratingDay === dayPlan.day}
                 />
               ))
             ) : (
