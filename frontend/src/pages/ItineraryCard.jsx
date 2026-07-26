@@ -425,7 +425,7 @@ export default function ItineraryDetails() {
                   fontSize: "0.85rem"
                 }}
               >
-                {aiLoading ? "Generating..." : aiPlan ? "🔄 Regenerate Full Plan" : "✨ AI Magic Plan"}
+                {aiLoading ? "Generating..." : aiPlan ? "Regenerate Full Plan" : "Generate AI Plan"}
               </button>
             </div>
           </div>

@@ -12,7 +12,7 @@ router.post('/create', userMiddleware, async (req, res) => {
   }
   try {
     const newItinerary = await ItineraryModel.create({
-      userId: req.userId,      // 👈 from JWT middleware
+      userId: req.userId,      // from JWT middleware
       destination,
       startdate,
       enddate,
@@ -46,7 +46,7 @@ router.post("/event", userMiddleware, async (req, res) => {
     const itinerary = await ItineraryModel.findOneAndUpdate(
       {
         _id: itineraryId,
-        userId: req.userId // 🔒 ensure owner
+        userId: req.userId // ensure owner
       },
       {
         $push: { events: event }

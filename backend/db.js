@@ -18,8 +18,7 @@ const UserSchema = new Schema({
   city: String,
   state: String,
   email: { type: String, unique: true },
-  phone_number: String,
-  googleTokens: { type: Object }
+  phone_number: String
 });
 
 // ---------------- OTP ----------------

@@ -112,10 +112,10 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
     await OtpModel.create({ email, otp });
 
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.log(`\n======================================================`);
-      console.log(`🔐 [DEV MODE] Password Reset OTP for ${email}: ${otp}`);
-      console.log(`(Email sending skipped because EMAIL_USER / EMAIL_PASS are not in .env)`);
-      console.log(`======================================================\n`);
+      console.log(`\n------------------------------------------------------`);
+      console.log(`[DEV MODE] Password Reset OTP for ${email}: ${otp}`);
+      console.log(`Email sending skipped — EMAIL_USER / EMAIL_PASS not set in .env`);
+      console.log(`------------------------------------------------------\n`);
       return res.json({ status: "OTP generated! (Check server console since EMAIL_USER/PASS are not configured in .env)" });
     }
 
@@ -133,7 +133,7 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
     await transporter.sendMail({
       from: `"TripSync" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "🔐 TripSync Password Reset OTP",
+      subject: "TripSync — Password Reset OTP",
       html: `
         <div style="font-family: sans-serif; padding: 20px; background: #1a1a1a; color: #fff; border-radius: 10px;">
           <h2 style="color: #9a5db8;">TripSync Password Reset</h2>

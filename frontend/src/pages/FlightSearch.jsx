@@ -164,7 +164,7 @@ export default function Flights() {
             <div className="flights-grid">
               {!loading && !error && goingFlights.length === 0 && (
                 <div style={{ padding: "20px", background: "#2a2a2a", borderRadius: "8px", margin: "15px 0", color: "#ccc", gridColumn: "1 / -1" }}>
-                  <p>ℹ️ <b>No direct flights found</b> between {source} and {destination} on {startDate}.</p>
+                  <p><b>No direct flights found</b> between {source} and {destination} on {startDate}.</p>
                   <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "5px" }}>Try searching from major nearby international hub airports or alternate dates.</p>
                 </div>
               )}
@@ -182,7 +182,7 @@ export default function Flights() {
             <div className="flights-grid">
               {!loading && !error && returnFlights.length === 0 && (
                 <div style={{ padding: "20px", background: "#2a2a2a", borderRadius: "8px", margin: "15px 0", color: "#ccc", gridColumn: "1 / -1" }}>
-                  <p>ℹ️ <b>No return flights found</b> between {destination} and {source} on {endDate}.</p>
+                  <p><b>No return flights found</b> between {destination} and {source} on {endDate}.</p>
                   <p style={{ fontSize: "0.85rem", color: "#888", marginTop: "5px" }}>Try searching from major nearby international hub airports or alternate dates.</p>
                 </div>
               )}
