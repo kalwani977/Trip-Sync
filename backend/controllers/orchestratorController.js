@@ -115,7 +115,6 @@ export const orchestrateTrip = async (req, res) => {
         engine: "google_events",
         q: `Events in ${destination}`,
         hl: "en",
-        gl: "in",
         htichips: `date:custom,${startDate.replaceAll("-", "")},${endDate.replaceAll("-", "")}`,
         api_key: process.env.SERPAPI_KEY
       });

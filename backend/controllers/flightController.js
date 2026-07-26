@@ -54,7 +54,10 @@ export const getFlights = async (req, res) => {
             from: departure_id,
             to: arrival_id,
             count: simplifiedFlights.length,
-            flights: simplifiedFlights
+            flights: simplifiedFlights,
+            message: simplifiedFlights.length === 0 
+                ? `No direct or scheduled commercial flights found between ${from} (${departure_id}) and ${to} (${arrival_id}) on ${out_date}.` 
+                : undefined
         });
 
     } catch (err) {

@@ -111,8 +111,18 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
     // Save OTP to DB
     await OtpModel.create({ email, otp });
 
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.log(`\n======================================================`);
+      console.log(`🔐 [DEV MODE] Password Reset OTP for ${email}: ${otp}`);
+      console.log(`(Email sending skipped because EMAIL_USER / EMAIL_PASS are not in .env)`);
+      console.log(`======================================================\n`);
+      return res.json({ status: "OTP generated! (Check server console since EMAIL_USER/PASS are not configured in .env)" });
+    }
+
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true, // Use SSL
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS
@@ -128,7 +138,7 @@ router.post("/forgot-password", passwordResetLimiter, async (req, res) => {
         <div style="font-family: sans-serif; padding: 20px; background: #1a1a1a; color: #fff; border-radius: 10px;">
           <h2 style="color: #9a5db8;">TripSync Password Reset</h2>
           <p>Your OTP code is:</p>
-          <h1 style="color: #D4AF37; letter-spacing: 5px;">${otp}</h1>
+          <h1 style="color: #f7f7f7ff; letter-spacing: 5px;">${otp}</h1>
           <p>This code expires in <strong>10 minutes</strong>.</p>
           <p style="color: #888;">If you didn't request this, ignore this email.</p>
         </div>

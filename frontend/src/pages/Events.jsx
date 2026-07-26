@@ -167,6 +167,12 @@ const handleAddToCalendar = async (event) => {
 
         {loading && <p className="loading-text">Loading events...</p>}
         {error && <p className="error-text">{error}</p>}
+        {!loading && !error && events.length === 0 && (
+          <div style={{ padding: "30px", background: "#2a2a2a", borderRadius: "10px", textAlign: "center", color: "#ccc", margin: "20px 0" }}>
+            <p style={{ fontSize: "1.1rem" }}>ℹ️ <b>No scheduled events found</b> in {city} for these exact dates ({startDate} to {endDate}).</p>
+            <p style={{ fontSize: "0.9rem", color: "#888", marginTop: "8px" }}>Try expanding your dates or checking major nearby cities!</p>
+          </div>
+        )}
 
         <div className="travel-grid">
           {events.map((event, index) => (

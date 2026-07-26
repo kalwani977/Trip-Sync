@@ -11,7 +11,6 @@ export const getEvents = async (req, res) => {
                 engine: "google_events",
                 q: `Events in ${city}`,
                 hl: "en",
-                gl: "in",
                 htichips: `date:custom,${formatDate(start_date)},${formatDate(end_date)}`,
                 api_key: process.env.SERPAPI_KEY
             });
