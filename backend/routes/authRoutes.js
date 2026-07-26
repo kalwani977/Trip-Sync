@@ -48,8 +48,15 @@ router.post("/register", registerLimiter, async (req, res) => {
   }
 
   try {
-    const existingUser = await UserModel.findOne({ email });
-    if (existingUser) return res.status(400).json({ status: "Already registered" });
+    const existingEmail = await UserModel.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ status: "This email is already registered. Please log in or use a different email." });
+    }
+
+    const existingUsername = await UserModel.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ status: "This username is already taken. Please choose a different one." });
+    }
 
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -61,7 +68,7 @@ router.post("/register", registerLimiter, async (req, res) => {
       firstname,
       lastname,
       gender,
-      dob,            
+      dob,
       nationality,
       city,
       state,
@@ -70,8 +77,15 @@ router.post("/register", registerLimiter, async (req, res) => {
 
     res.json({ status: "Signup successful", userId: user._id });
   } catch (err) {
+    // Fallback for any race-condition duplicate key errors
     if (err.code === 11000) {
-      return res.status(400).json({ status: "Username or email already exists" });
+      const field = Object.keys(err.keyPattern || {})[0];
+      const message = field === "username"
+        ? "This username is already taken."
+        : field === "email"
+        ? "This email is already registered."
+        : "Duplicate entry. Please check your details.";
+      return res.status(400).json({ status: message });
     }
     res.status(500).json({ status: "Server error", error: "An unexpected error occurred" });
   }
